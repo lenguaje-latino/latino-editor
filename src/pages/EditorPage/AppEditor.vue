@@ -1,22 +1,22 @@
 <template>
-  <prism-editor class="app-editor w-full h-full" v-model="code" :highlight="highlighter" line-numbers @keyup="onKeyUp" @keydown="onKeyDown"></prism-editor>
+  <MonacoEditor
+      ref="editor"
+      v-model="code"
+      theme="vs-dark"
+      language="javascript"
+      :options="options"
+      class="w-full h-full"
+  ></MonacoEditor>
 </template>
 
 <script>
-import { PrismEditor } from 'vue-prism-editor';
-import 'vue-prism-editor/dist/prismeditor.min.css';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism-tomorrow.css';
+import MonacoEditor from 'monaco-editor-vue';
+import { monaco } from 'monaco-editor-vue';
 
 export default {
   name: "AppEditor",
   components: {
-    PrismEditor,
-  },
-  props: {
-    value: null,
+    MonacoEditor,
   },
   data() {
     return {
@@ -40,35 +40,19 @@ export default {
           '    fin\n' +
           'fin\n' +
           '#mostrar el resultado a consola con la funcion escribir()\n' +
-          'escribir("el mayor es: " .. max)'
+          'escribir("el mayor es: " .. max)',
+
+      options: {
+        automaticLayout: true,
+      },
     };
   },
-  watch: {
-    value(value) {
-      this.code = value
-    },
-
-    code(value) {
-      this.$emit('input', value);
-    },
+  mounted() {
+    this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      this.execute();
+    });
   },
   methods: {
-    highlighter(code) {
-      return highlight(code, languages.js);
-    },
-
-    onKeyUp($event) {
-      if ($event.ctrlKey && 'Enter' === $event.key) {
-        this.execute();
-      }
-    },
-
-    onKeyDown($event) {
-      if ($event.ctrlKey && 'Enter' === $event.key) {
-        $event.preventDefault();
-      }
-    },
-
     execute() {
       this.$root.$emit('executeCode', this.code);
     }
@@ -76,20 +60,4 @@ export default {
 }
 </script>
 
-<style>
-/* required class */
-.app-editor {
-  background: #2d2d2d;
-  color: #ccc;
-
-  font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 5px;
-}
-
-/* optional class for removing the outline */
-.prism-editor__textarea:focus {
-  outline: none;
-}
-</style>
+<style scoped></style>
