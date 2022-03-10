@@ -26,4 +26,4 @@ pnpm-debug.log*
 /dist_electron
 
 # TODO: Change for app.appData('temp').
-./temp.lat
+temp.lat
