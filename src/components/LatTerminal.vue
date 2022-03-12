@@ -14,7 +14,7 @@ const pty = require('node-pty');
 const fs = require('fs');
 
 export default {
-  name: 'AppTerminal',
+  name: 'LatTerminal',
   data() {
     return {
       terminal: null,

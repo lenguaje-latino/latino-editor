@@ -13,7 +13,7 @@
 import MonacoEditor, { monaco } from 'monaco-editor-vue';
 
 export default {
-  name: 'AppEditor',
+  name: 'LatEditor',
   components: {
     MonacoEditor,
   },

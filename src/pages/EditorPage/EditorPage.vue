@@ -1,28 +1,28 @@
 <template>
-  <div class="w-full h-screen flex flex-col bg-gray-800 text-white overflow-hidden">
-    <div class="flex flex-shrink flex-row p-1">
-      <button class="p-1 bg-primary-800 text-primary-50 rounded">Ejecutar</button>
-    </div>
+  <div class="w-full h-screen flex flex-col bg-neutral-800 text-white overflow-hidden">
+    <AppBar></AppBar>
+
     <vue-split-view class="flex flex-grow flex-row">
       <template #A>
-        <AppEditor></AppEditor>
+        <LatEditor></LatEditor>
       </template>
       <template #B>
-        <AppTerminal></AppTerminal>
+        <LatTerminal></LatTerminal>
       </template>
     </vue-split-view>
   </div>
 </template>
 
 <script>
-import AppEditor from '@/pages/EditorPage/AppEditor';
-import AppTerminal from '@/pages/EditorPage/AppTerminal';
+import LatEditor from '@/components/LatEditor';
+import LatTerminal from '@/components/LatTerminal';
 import VueSplitView from 'vue-split-view/dist/vue2';
 import 'vue-split-view/dist/style.css';
+import AppBar from '@/components/AppBar';
 
 export default {
   name: 'EditorPage',
-  components: { AppTerminal, AppEditor, VueSplitView },
+  components: { AppBar, LatTerminal, LatEditor, VueSplitView },
 };
 </script>
 
