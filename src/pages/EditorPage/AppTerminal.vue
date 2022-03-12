@@ -7,22 +7,22 @@
 <script>
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import 'xterm/css/xterm.css';
+import debounce from 'lodash.debounce';
 // const os = require('os');
 const pty = require('node-pty');
 const fs = require('fs');
-import 'xterm/css/xterm.css'
-import debounce from 'lodash.debounce'
 
 export default {
   name: 'AppTerminal',
-  data () {
+  data() {
     return {
       terminal: null,
       fitAddon: null,
       ptyProcess: null,
-    }
+    };
   },
-  mounted () {
+  mounted() {
     this.init();
 
     this.$root.$on('executeCode', this.executeCode);
@@ -34,12 +34,12 @@ export default {
     init() {
       this.terminal = new Terminal({
         cursorBlink: true,
-      })
+      });
 
       this.fitAddon = new FitAddon();
       this.terminal.loadAddon(this.fitAddon);
 
-      this.terminal.open(document.getElementById('terminal'))
+      this.terminal.open(document.getElementById('terminal'));
 
       this.fitTerminal();
     },
@@ -62,7 +62,7 @@ export default {
         env: process.env,
       });
 
-      this.terminal.onData(data => {
+      this.terminal.onData((data) => {
         this.ptyProcess.write(data);
       });
 
@@ -72,22 +72,23 @@ export default {
     },
 
     clearTerminal() {
-      this.terminal.write('\x1bc')
+      this.terminal.write('\x1bc');
     },
 
     fitTerminal() {
       this.fitAddon.fit();
     },
 
-    onResizeDebounced: debounce(function() {
+    onResizeDebounced: debounce(function () {
       this.fitTerminal();
     }, 10),
   },
-}
+};
 </script>
 
 <style>
-.terminal.xterm, .xterm-viewport {
+.terminal.xterm,
+.xterm-viewport {
   @apply w-full h-full;
 }
 </style>

@@ -5,15 +5,14 @@
 </template>
 
 <script>
-import EditorPage from "@/pages/EditorPage/EditorPage";
+import EditorPage from '@/pages/EditorPage/EditorPage';
 
 export default {
   name: 'App',
   components: {
     EditorPage,
-  }
-}
+  },
+};
 </script>
 
-<style>
-</style>
+<style></style>
