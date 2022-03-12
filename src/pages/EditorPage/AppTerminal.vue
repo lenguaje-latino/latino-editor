@@ -1,5 +1,7 @@
 <template>
-  <div id="terminal" class="console"></div>
+  <div id="terminal" class="relative h-full overflow-hidden">
+    <resize-observer @notify="onResizeDebounced" />
+  </div>
 </template>
 
 <script>
@@ -9,12 +11,14 @@ import { FitAddon } from 'xterm-addon-fit';
 const pty = require('node-pty');
 const fs = require('fs');
 import 'xterm/css/xterm.css'
+import debounce from 'lodash.debounce'
 
 export default {
   name: 'AppTerminal',
   data () {
     return {
       terminal: null,
+      fitAddon: null,
       ptyProcess: null,
     }
   },
@@ -28,13 +32,16 @@ export default {
   },
   methods: {
     init() {
-      this.terminal = new Terminal({})
+      this.terminal = new Terminal({
+        cursorBlink: true,
+      })
 
-      const fitAddon = new FitAddon();
-      this.terminal.loadAddon(fitAddon);
+      this.fitAddon = new FitAddon();
+      this.terminal.loadAddon(this.fitAddon);
 
       this.terminal.open(document.getElementById('terminal'))
-      fitAddon.fit();
+
+      this.fitTerminal();
     },
 
     executeCode(code) {
@@ -49,8 +56,8 @@ export default {
 
       this.ptyProcess = pty.spawn('/usr/local/bin/latino', ['temp.lat'], {
         name: 'xterm-color',
-        cols: 80,
-        rows: 30,
+        // cols: 80,
+        // rows: 30,
         cwd: process.cwd(),
         env: process.env,
       });
@@ -67,8 +74,20 @@ export default {
     clearTerminal() {
       this.terminal.write('\x1bc')
     },
+
+    fitTerminal() {
+      this.fitAddon.fit();
+    },
+
+    onResizeDebounced: debounce(function() {
+      this.fitTerminal();
+    }, 10),
   },
 }
 </script>
 
-<style scoped></style>
+<style>
+.terminal.xterm, .xterm-viewport {
+  @apply w-full h-full;
+}
+</style>

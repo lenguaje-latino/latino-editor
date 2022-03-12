@@ -5,7 +5,7 @@
       theme="vs-dark"
       language="javascript"
       :options="options"
-      class="w-full h-full"
+      class="w-full h-full overflow-hidden"
   ></MonacoEditor>
 </template>
 
@@ -44,6 +44,8 @@ export default {
 
       options: {
         automaticLayout: true,
+        vertical: 'visible',
+        horizontal: 'visible',
       },
     };
   },
