@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row items-center space-x-2">
-    <div class="flex flex-shrink flex-row items-center h-full px-2 bg-neutral-900 text-neutral-100">
+    <div class="flex flex-shrink flex-row items-center h-full px-2 bg-gray-900 text-gray-100">
       <span> LatinoEditor </span>
     </div>
 

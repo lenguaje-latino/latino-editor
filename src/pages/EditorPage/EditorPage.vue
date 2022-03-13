@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-screen flex flex-col bg-neutral-800 text-white overflow-hidden">
+  <div class="w-full h-screen flex flex-col bg-gray-800 text-white overflow-hidden">
     <AppBar></AppBar>
 
     <vue-split-view class="flex flex-grow flex-row">
