@@ -1,12 +1,5 @@
 <template>
-  <MonacoEditor
-    ref="editor"
-    v-model="code"
-    theme="vs-dark"
-    language="javascript"
-    :options="options"
-    class="w-full h-full overflow-hidden"
-  ></MonacoEditor>
+  <MonacoEditor ref="editor" v-model="code" :options="options" class="w-full h-full overflow-hidden"></MonacoEditor>
 </template>
 
 <script>
@@ -46,6 +39,11 @@ export default {
         automaticLayout: true,
         vertical: 'visible',
         horizontal: 'visible',
+        theme: 'vs-dark',
+        fontFamily: 'Fira Code',
+        fontSize: 18,
+        language: 'javascript',
+        renderWhitespace: 'all',
       },
     };
   },
