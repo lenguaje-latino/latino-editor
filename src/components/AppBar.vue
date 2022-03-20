@@ -5,7 +5,7 @@
     </div>
 
     <div class="flex flex-row items-center p-2 space-x-2">
-      <button class="p-1 bg-primary-700 text-primary-50 rounded">
+      <button class="p-1 bg-primary-700 hover:bg-primary-600 text-primary-50 rounded">
         <button @click="execute" class="flex flex-row items-center space-x-1">
           <PlayIcon></PlayIcon>
           <span>Ejecutar</span>
