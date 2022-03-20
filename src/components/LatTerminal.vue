@@ -12,6 +12,7 @@ import debounce from 'lodash.debounce';
 // const os = require('os');
 const pty = require('node-pty');
 const fs = require('fs');
+const path = require('path');
 
 export default {
   name: 'LatTerminal',
@@ -54,7 +55,10 @@ export default {
 
       fs.writeFileSync('temp.lat', code, 'utf-8');
 
-      this.ptyProcess = pty.spawn('/usr/local/bin/latino', ['temp.lat'], {
+      const latinoPath =
+        process.env.NODE_ENV === 'production' ? path.join(__dirname, 'bin/linux/latino') : './bin/linux/latino';
+
+      this.ptyProcess = pty.spawn(latinoPath, ['temp.lat'], {
         name: 'xterm-color',
         // cols: 80,
         // rows: 30,
