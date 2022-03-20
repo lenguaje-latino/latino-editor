@@ -4,7 +4,11 @@
 
 <script>
 import MonacoEditor, { monaco } from 'monaco-editor-vue';
+import { loadWASM } from 'onigasm';
+import { Registry } from 'monaco-textmate';
+import { wireTmGrammars } from 'monaco-editor-textmate';
 const { ipcRenderer } = require('electron');
+const fs = require('fs');
 
 export default {
   name: 'LatEditor',
@@ -43,15 +47,13 @@ export default {
         theme: 'vs-dark',
         fontFamily: 'Fira Code',
         fontSize: 18,
-        language: 'javascript',
+        language: 'latino',
         renderWhitespace: 'all',
       },
     };
   },
-  mounted() {
-    this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-      this.saveAndExecute();
-    });
+  async mounted() {
+    await this.setupMonacoEditor();
 
     this.$root.$on('saveAndExecute', this.saveAndExecute);
   },
@@ -59,6 +61,30 @@ export default {
     this.$root.$off('saveAndExecute', this.saveAndExecute);
   },
   methods: {
+    async setupMonacoEditor() {
+      await loadWASM('https://cdn.jsdelivr.net/npm/onigasm@2.2.5/lib/onigasm.wasm'); // See https://www.npmjs.com/package/onigasm#light-it-up
+
+      const registry = new Registry({
+        getGrammarDefinition: async () => {
+          return {
+            format: 'json',
+            content: fs.readFileSync('./public/latino.tmLanguage.json', 'utf-8'),
+          };
+        },
+      });
+
+      const grammars = new Map();
+      grammars.set('latino', 'source.latino');
+
+      monaco.languages.register({ id: 'latino' });
+
+      await wireTmGrammars(monaco, registry, grammars, this.$refs.editor.editor);
+
+      this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+        this.saveAndExecute();
+      });
+    },
+
     saveAndExecute() {
       this.saveFile();
       this.execute();

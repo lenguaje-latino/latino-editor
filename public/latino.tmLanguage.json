@@ -1,0 +1,63 @@
+{
+    "name": "Latino",
+    "scopeName": "source.latino",
+    "version": "1.0.2",
+    "patterns": [
+        {
+           "name": "comment.line.latino",
+           "match": "#.*$|//.*$",
+           "description": "Linea de comentario simple"
+        }, {
+            "name": "comment.block.latino",
+            "begin": "/\\*",
+            "end": "\\*/",
+            "description": "Linea de comentario multiple"
+        }, {
+            "name": "string.quoted.double.latino",
+            "begin": "\"",
+            "end": "\""
+        }, {
+            "name": "invalid.illegal.latino",
+            "begin":"(\"|'|\\(|{|\\[)<\\w>+$",
+            "end": "(?!\\))|$|\\n",
+            "description": "Marcador de err de -Brackets"
+        }, {
+            "name": "string.quoted.single.latino",
+            "begin": "'",
+            "end": "'"
+        }, {
+            "name": "keyword.control.logic.latino",
+            "match": "&&|\\|\\||!|!="
+        }, {
+            "name": "invalid.illegal.latino",
+            "match": "=(\\+|-|\\*|\\/|%|\\^|!|<|>|~)|===",
+            "description": "Marcador de err -Operadores"
+        }, {
+            "name": "constant.language.latino",
+            "match": "\\+|-|\\*|\\/|%|\\^|<|>|\\=|\\.\\.|~="
+        }, {
+            "name": "string.quote.latino",
+            "match": "\\b0x[a-f\\d]+\\.?[a-f\\d]*(?:p[+-]?\\d+)?\\b|\\b\\d+(?:\\.\\B|\\.?\\d*(?:e[+-]?\\d+)?\\b)|\\B\\.\\d+(?:e[+-]?\\d+)?\\b\\i",
+            "description": "Marcador de numeros"
+        }, {
+            "name": "keyword.control.latino",
+            "match": "(incluir|retorno|retornar|ret|error|romper|continuar)"
+        }, {
+            "name": "constant.language.latino",
+            "match": "(escribir|imprimirf|imprimir|poner|global)"
+        }, {
+            "name": "constant.language.latino",
+            "match": "(mate|sis|cadena|paquete|lista|gc|archivo|dic)(?=\\.)"
+        }, {
+            "name": "constant.language.latino",
+            "match": "\\b(verdadero|falso|cierto|nulo)\\b"
+        }, {
+            "name": "support.function.latino",
+            "match": "(sino|osi|si|fin|elegir|caso|defecto|otro|repetir|desde|hasta|mientras|funcion|fun)"
+        }, {
+            "name": "keyword.control.latino",
+            "match": "(?!\\d|\\.)\\w+(?=\\s*(?:\\())",
+            "description": "Marcador de nombre-de-funciones"
+        }
+    ]
+}
