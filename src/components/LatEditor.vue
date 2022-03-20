@@ -4,6 +4,7 @@
 
 <script>
 import MonacoEditor, { monaco } from 'monaco-editor-vue';
+const { ipcRenderer } = require('electron');
 
 export default {
   name: 'LatEditor',
@@ -49,12 +50,31 @@ export default {
   },
   mounted() {
     this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-      this.execute();
+      this.saveAndExecute();
     });
+
+    this.$root.$on('saveAndExecute', this.saveAndExecute);
+  },
+  destroyed() {
+    this.$root.$off('saveAndExecute', this.saveAndExecute);
   },
   methods: {
+    saveAndExecute() {
+      this.saveFile();
+      this.execute();
+    },
+
+    saveFile() {
+      ipcRenderer.send('saveFile', {
+        filename: 'temp.lat',
+        content: this.code,
+      });
+    },
+
     execute() {
-      this.$root.$emit('executeCode', this.code);
+      ipcRenderer.send('executeCode', {
+        filename: 'temp.lat',
+      });
     },
   },
 };

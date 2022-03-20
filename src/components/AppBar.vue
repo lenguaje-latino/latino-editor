@@ -6,10 +6,10 @@
 
     <div class="flex flex-row items-center p-2 space-x-2">
       <button class="p-1 bg-primary-700 text-primary-50 rounded">
-        <div class="flex flex-row items-center space-x-1">
+        <button @click="execute" class="flex flex-row items-center space-x-1">
           <PlayIcon></PlayIcon>
           <span>Ejecutar</span>
-        </div>
+        </button>
       </button>
     </div>
   </div>
@@ -21,6 +21,11 @@ import { PlayIcon } from '@vue-hero-icons/outline';
 export default {
   name: 'AppBar',
   components: { PlayIcon },
+  methods: {
+    execute() {
+      this.$root.$emit('saveAndExecute');
+    },
+  },
 };
 </script>
 

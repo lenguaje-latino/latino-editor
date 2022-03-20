@@ -1,8 +1,10 @@
 'use strict';
 
-import { app, BrowserWindow, protocol } from 'electron';
+import { app, BrowserWindow, protocol, ipcMain } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import fs from 'fs';
+import path from 'path';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -63,6 +65,16 @@ app.on('ready', async () => {
     }
   }
   createWindow();
+});
+
+ipcMain.on('saveFile', (event, args) => {
+  fs.writeFileSync(path.join(app.getPath('temp'), args.filename), args.content, 'utf-8');
+});
+
+ipcMain.on('executeCode', (event, args) => {
+  const filepath = path.join(app.getPath('temp'), args.filename);
+
+  event.sender.send('executeCode', filepath);
 });
 
 // Exit cleanly on request from parent process in development mode.

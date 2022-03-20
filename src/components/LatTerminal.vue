@@ -11,8 +11,8 @@ import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
 // const os = require('os');
 const pty = require('node-pty');
-const fs = require('fs');
 const path = require('path');
+const { ipcRenderer } = require('electron');
 
 export default {
   name: 'LatTerminal',
@@ -26,10 +26,10 @@ export default {
   mounted() {
     this.init();
 
-    this.$root.$on('executeCode', this.executeCode);
+    ipcRenderer.on('executeCode', this.executeCode);
   },
   destroyed() {
-    this.$root.$off('executeCode', this.executeCode);
+    ipcRenderer.removeListener('executeCode', this.executeCode);
   },
   methods: {
     init() {
@@ -43,31 +43,34 @@ export default {
       this.terminal.open(document.getElementById('terminal'));
 
       this.fitTerminal();
+
+      this.terminal.onData((data) => {
+        if (!this.ptyProcess) {
+          return;
+        }
+
+        this.ptyProcess.write(data);
+      });
     },
 
-    executeCode(code) {
+    executeCode(event, filepath) {
       if (this.ptyProcess && this.ptyProcess.pid) {
         this.ptyProcess.kill();
         this.ptyProcess = null;
       }
 
       this.clearTerminal();
-
-      fs.writeFileSync('temp.lat', code, 'utf-8');
+      this.focusTerminal();
 
       const latinoPath =
         process.env.NODE_ENV === 'production' ? path.join(__dirname, 'bin/linux/latino') : './bin/linux/latino';
 
-      this.ptyProcess = pty.spawn(latinoPath, ['temp.lat'], {
+      this.ptyProcess = pty.spawn(latinoPath, [filepath], {
         name: 'xterm-color',
         // cols: 80,
         // rows: 30,
         cwd: process.cwd(),
         env: process.env,
-      });
-
-      this.terminal.onData((data) => {
-        this.ptyProcess.write(data);
       });
 
       this.ptyProcess.on('data', (data) => {
@@ -81,6 +84,10 @@ export default {
 
     fitTerminal() {
       this.fitAddon.fit();
+    },
+
+    focusTerminal() {
+      this.terminal.focus();
     },
 
     onResizeDebounced: debounce(function () {
