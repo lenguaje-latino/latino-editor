@@ -1,24 +1,7 @@
-# latino-editor-electron
+# LatinoEditor
 
-## Project setup
-```
-npm install
-```
+Editor de código para el lenguaje [Latino](https://www.lenguajelatino.org/).
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Este editor de código no es oficial, y es desarrollado por [Enzo Notario](https://enzonotario.me).
 
-### Compiles and minifies for production
-```
-npm run build
-```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

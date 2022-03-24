@@ -37,6 +37,7 @@ export default {
         '        max = c\n' +
         '    fin\n' +
         'fin\n' +
+        '\n' +
         '#mostrar el resultado a consola con la funcion escribir()\n' +
         'escribir("el mayor es: " .. max)',
 
@@ -66,9 +67,10 @@ export default {
 
       const registry = new Registry({
         getGrammarDefinition: async () => {
+          const grammarDefinition = fs.readFileSync('./public/latino.tmLanguage.json', 'utf-8');
           return {
             format: 'json',
-            content: fs.readFileSync('./public/latino.tmLanguage.json', 'utf-8'),
+            content: grammarDefinition,
           };
         },
       });
