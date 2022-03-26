@@ -29,7 +29,11 @@ export default {
         '\n' +
         '#aqui almacenaremos el numero mayor\n' +
         'si a > b\n' +
-        '    max = a\n' +
+        '    si a > c\n' +
+        '        max = a\n' +
+        '    sino\n' +
+        '        max = c\n' +
+        '    fin\n' +
         'sino \n' +
         '    si b > c\n' +
         '        max = b\n' +

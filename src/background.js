@@ -1,12 +1,14 @@
 'use strict';
 
-import { app, BrowserWindow, protocol, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, protocol } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
 import path from 'path';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+const isMac = process.platform === 'darwin';
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }]);
@@ -33,6 +35,113 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html');
   }
+
+  win.setMenu(createMenu(win));
+}
+
+function createMenu(win) {
+  const menuTemplate = [
+    {
+      label: 'Archivo',
+      submenu: [
+        {
+          label: 'Abrir',
+          accelerator: 'CommandOrControl+O',
+          role: 'open',
+        },
+
+        {
+          label: 'Guardar',
+          accelerator: 'CommandOrControl+S',
+          role: 'save',
+        },
+
+        isMac
+          ? {
+              label: 'Salir',
+              role: 'close',
+            }
+          : {
+              label: 'Salir',
+              role: 'quit',
+            },
+      ],
+    },
+
+    {
+      label: 'Editar',
+      submenu: [
+        {
+          label: 'Deshacer',
+          role: 'undo',
+        },
+        {
+          label: 'Rehacer',
+          role: 'redo',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          label: 'Cortar',
+          role: 'cut',
+        },
+        {
+          label: 'Copiar',
+          role: 'copy',
+        },
+        {
+          label: 'Pegar',
+          role: 'paste',
+        },
+        {
+          label: 'Seleccionar todo',
+          role: 'selectall',
+        },
+      ],
+    },
+
+    {
+      label: 'Ventana',
+      role: 'window',
+      submenu: [
+        isDevelopment
+          ? {
+              label: 'Reload',
+              accelerator: 'CmdOrCtrl+R',
+              click: function (item, focusedWindow) {
+                if (focusedWindow) focusedWindow.reload();
+              },
+            }
+          : {},
+        {
+          label: 'Minimizar',
+          accelerator: 'CmdOrCtrl+M',
+          role: 'minimize',
+        },
+        {
+          label: 'Cerrar',
+          accelerator: 'CmdOrCtrl+W',
+          role: 'close',
+        },
+      ],
+    },
+
+    {
+      label: 'Ayuda',
+      submenu: [
+        {
+          label: 'Acerca de',
+          click: async () => {
+            const { shell } = require('electron');
+            await shell.openExternal('https://latinoeditor.enzonotario.me');
+          },
+        },
+      ],
+    },
+  ];
+
+  return Menu.buildFromTemplate(menuTemplate);
 }
 
 app.allowRendererProcessReuse = false; // Necesario para que funcione node-pty.
