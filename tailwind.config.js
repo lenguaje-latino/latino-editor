@@ -7,6 +7,10 @@ module.exports = {
       colors: {
         primary: colors.indigo,
       },
+
+      maxWidth: {
+        '1/3': '33%',
+      },
     },
   },
   plugins: [],

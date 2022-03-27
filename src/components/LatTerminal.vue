@@ -9,7 +9,7 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
-// const os = require('os');
+
 const pty = require('node-pty');
 const path = require('path');
 const { ipcRenderer } = require('electron');

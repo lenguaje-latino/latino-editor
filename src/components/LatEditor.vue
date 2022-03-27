@@ -7,8 +7,10 @@ import MonacoEditor, { monaco } from 'monaco-editor-vue';
 import { loadWASM } from 'onigasm';
 import { Registry } from 'monaco-textmate';
 import { wireTmGrammars } from 'monaco-editor-textmate';
-const { ipcRenderer } = require('electron');
-const fs = require('fs');
+import { readFileSync } from 'fs';
+import { useEditorStore } from '@/stores/editor';
+import { ipcRenderer } from 'electron';
+import { mapActions, mapWritableState } from 'pinia';
 
 export default {
   name: 'LatEditor',
@@ -17,34 +19,6 @@ export default {
   },
   data() {
     return {
-      code:
-        '#calcula el mayor de tres numeros\n' +
-        '#leer los 3 numeros por teclado con la funcion leer()\n' +
-        'escribir("ingresa el primer numero:")\n' +
-        'a=leer()\n' +
-        'escribir("ingresa el segundo numero:")\n' +
-        'b=leer()\n' +
-        'escribir("ingresa el tercer numero:")\n' +
-        'c=leer()\n' +
-        '\n' +
-        '#aqui almacenaremos el numero mayor\n' +
-        'si a > b\n' +
-        '    si a > c\n' +
-        '        max = a\n' +
-        '    sino\n' +
-        '        max = c\n' +
-        '    fin\n' +
-        'sino \n' +
-        '    si b > c\n' +
-        '        max = b\n' +
-        '    sino\n' +
-        '        max = c\n' +
-        '    fin\n' +
-        'fin\n' +
-        '\n' +
-        '#mostrar el resultado a consola con la funcion escribir()\n' +
-        'escribir("el mayor es: " .. max)',
-
       options: {
         automaticLayout: true,
         vertical: 'visible',
@@ -61,17 +35,42 @@ export default {
     await this.setupMonacoEditor();
 
     this.$root.$on('saveAndExecute', this.saveAndExecute);
+    ipcRenderer.on('fileSaved', this.onFileSaved);
   },
   destroyed() {
     this.$root.$off('saveAndExecute', this.saveAndExecute);
+    ipcRenderer.removeListener('fileSaved', this.onFileSaved);
+  },
+  computed: {
+    ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
+  },
+  watch: {
+    filepath(value, oldValue) {
+      this.wasRecentlyOpened = value !== oldValue;
+    },
+
+    code(value, oldValue) {
+      if (this.wasRecentlyOpened) {
+        this.wasRecentlyOpened = false;
+        return;
+      }
+
+      if (value !== oldValue) {
+        this.synced = false;
+      }
+    },
   },
   methods: {
+    onFileSaved(event, filepath) {
+      this.usingFile(filepath);
+    },
+
     async setupMonacoEditor() {
       await loadWASM('https://cdn.jsdelivr.net/npm/onigasm@2.2.5/lib/onigasm.wasm'); // See https://www.npmjs.com/package/onigasm#light-it-up
 
       const registry = new Registry({
         getGrammarDefinition: async () => {
-          const grammarDefinition = fs.readFileSync('./public/latino.tmLanguage.json', 'utf-8');
+          const grammarDefinition = readFileSync('./public/latino.tmLanguage.json', 'utf-8');
           return {
             format: 'json',
             content: grammarDefinition,
@@ -98,16 +97,18 @@ export default {
 
     saveFile() {
       ipcRenderer.send('saveFile', {
-        filename: 'temp.lat',
+        filepath: this.filepath,
         content: this.code,
       });
     },
 
     execute() {
       ipcRenderer.send('executeCode', {
-        filename: 'temp.lat',
+        filepath: this.filepath,
       });
     },
+
+    ...mapActions(useEditorStore, ['usingFile']),
   },
 };
 </script>

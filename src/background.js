@@ -1,26 +1,27 @@
 'use strict';
 
-import { app, BrowserWindow, ipcMain, Menu, protocol } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import fs from 'fs';
-import path from 'path';
+import { createMenu } from '@/background/menu';
+import { openTemporaryFile, saveFile } from '@/background/handleFiles';
+import { calculateWindowSize } from '@/background/calculateWindowSize';
+import { showOpenFileDialog, showSaveFileDialog, showUnsavedFileDialog } from '@/background/dialog';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-
-const isMac = process.platform === 'darwin';
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }]);
 
 async function createWindow() {
-  // Create the browser window.
+  const windowSize = calculateWindowSize();
+
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    minWidth: windowSize.minWidth,
+    width: windowSize.width,
+    minHeight: windowSize.minHeight,
+    height: windowSize.height,
     webPreferences: {
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: true,
       contextIsolation: false,
     },
@@ -39,111 +40,6 @@ async function createWindow() {
   win.setMenu(createMenu(win));
 }
 
-function createMenu(win) {
-  const menuTemplate = [
-    {
-      label: 'Archivo',
-      submenu: [
-        {
-          label: 'Abrir',
-          accelerator: 'CommandOrControl+O',
-          role: 'open',
-        },
-
-        {
-          label: 'Guardar',
-          accelerator: 'CommandOrControl+S',
-          role: 'save',
-        },
-
-        isMac
-          ? {
-              label: 'Salir',
-              role: 'close',
-            }
-          : {
-              label: 'Salir',
-              role: 'quit',
-            },
-      ],
-    },
-
-    {
-      label: 'Editar',
-      submenu: [
-        {
-          label: 'Deshacer',
-          role: 'undo',
-        },
-        {
-          label: 'Rehacer',
-          role: 'redo',
-        },
-        {
-          type: 'separator',
-        },
-        {
-          label: 'Cortar',
-          role: 'cut',
-        },
-        {
-          label: 'Copiar',
-          role: 'copy',
-        },
-        {
-          label: 'Pegar',
-          role: 'paste',
-        },
-        {
-          label: 'Seleccionar todo',
-          role: 'selectall',
-        },
-      ],
-    },
-
-    {
-      label: 'Ventana',
-      role: 'window',
-      submenu: [
-        isDevelopment
-          ? {
-              label: 'Reload',
-              accelerator: 'CmdOrCtrl+R',
-              click: function (item, focusedWindow) {
-                if (focusedWindow) focusedWindow.reload();
-              },
-            }
-          : {},
-        {
-          label: 'Minimizar',
-          accelerator: 'CmdOrCtrl+M',
-          role: 'minimize',
-        },
-        {
-          label: 'Cerrar',
-          accelerator: 'CmdOrCtrl+W',
-          role: 'close',
-        },
-      ],
-    },
-
-    {
-      label: 'Ayuda',
-      submenu: [
-        {
-          label: 'Acerca de',
-          click: async () => {
-            const { shell } = require('electron');
-            await shell.openExternal('https://latinoeditor.enzonotario.me');
-          },
-        },
-      ],
-    },
-  ];
-
-  return Menu.buildFromTemplate(menuTemplate);
-}
-
 app.allowRendererProcessReuse = false; // Necesario para que funcione node-pty.
 
 // Quit when all windows are closed.
@@ -158,7 +54,9 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });
 
 // This method will be called when Electron has finished
@@ -177,13 +75,68 @@ app.on('ready', async () => {
 });
 
 ipcMain.on('saveFile', (event, args) => {
-  fs.writeFileSync(path.join(app.getPath('temp'), args.filename), args.content, 'utf-8');
+  const filepath = saveFile(args.filepath, args.content);
+
+  event.sender.send('fileSaved', filepath);
 });
 
 ipcMain.on('executeCode', (event, args) => {
-  const filepath = path.join(app.getPath('temp'), args.filename);
+  event.sender.send('executeCode', args.filepath);
+});
 
-  event.sender.send('executeCode', filepath);
+ipcMain.on('showOpenDialog', async (event, args) => {
+  const openFileDialog = await showOpenFileDialog();
+
+  if (openFileDialog.canceled || !openFileDialog || !openFileDialog.filePaths.length) {
+    return;
+  }
+
+  const filepath = openFileDialog.filePaths[0].toString();
+
+  event.sender.send('menu-command', {
+    command: 'open-file',
+    filepath,
+  });
+});
+
+ipcMain.on('showSaveDialog', async (event, args) => {
+  const saveFileDialog = await showSaveFileDialog(args.filename);
+
+  if (saveFileDialog.canceled || !saveFileDialog || !saveFileDialog.filePath.length) {
+    return;
+  }
+
+  const filepath = saveFileDialog.filePath.toString();
+
+  saveFile(filepath, args.content);
+
+  event.sender.send('menu-command', {
+    command: 'open-file',
+    filepath,
+  });
+});
+
+ipcMain.on('showUnsavedFileDialog', async (event, args) => {
+  const unsavedFileDialog = await showUnsavedFileDialog();
+
+  if (unsavedFileDialog.response === 1) {
+    return;
+  }
+
+  event.sender.send('menu-command', {
+    ...args,
+    confirmed: true,
+  });
+});
+
+ipcMain.on('openTemporaryFile', (event, args) => {
+  const filepath = openTemporaryFile(args.filename, args.content);
+
+  event.sender.send('menu-command', {
+    command: 'open-file',
+    filepath,
+    temporary: true,
+  });
 });
 
 // Exit cleanly on request from parent process in development mode.
