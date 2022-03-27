@@ -15,7 +15,7 @@ const path = require('path');
 const { ipcRenderer } = require('electron');
 
 export default {
-  name: 'LatTerminal',
+  name: 'Terminal',
   data() {
     return {
       terminal: null,

@@ -12,7 +12,7 @@ import { ipcRenderer } from 'electron';
 import { mapActions, mapWritableState } from 'pinia';
 
 export default {
-  name: 'LatEditor',
+  name: 'Editor',
   components: {
     MonacoEditor,
   },
