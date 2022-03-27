@@ -5,10 +5,17 @@ import './plugins/vue-resize';
 
 import './assets/tailwind.css';
 import './assets/app.css';
+import { loadWASM } from 'onigasm';
 
 Vue.config.productionTip = false;
 
-new Vue({
-  render: (h) => h(App),
-  pinia,
-}).$mount('#app');
+const init = async () => {
+  await loadWASM(require('onigasm/lib/onigasm.wasm'));
+
+  new Vue({
+    render: (h) => h(App),
+    pinia,
+  }).$mount('#app');
+};
+
+init();

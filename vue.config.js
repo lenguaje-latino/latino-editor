@@ -9,6 +9,11 @@ module.exports = {
           include: /node_modules/,
           type: 'javascript/auto',
         },
+        {
+          test: /\.wasm$/,
+          loader: 'file-loader',
+          type: 'javascript/auto',
+        },
       ],
     },
   },

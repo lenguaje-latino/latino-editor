@@ -4,7 +4,6 @@
 
 <script>
 import MonacoEditor, { monaco } from 'monaco-editor-vue';
-import { loadWASM } from 'onigasm';
 import { Registry } from 'monaco-textmate';
 import { wireTmGrammars } from 'monaco-editor-textmate';
 import { readFileSync } from 'fs';
@@ -66,8 +65,6 @@ export default {
     },
 
     async setupMonacoEditor() {
-      await loadWASM('https://cdn.jsdelivr.net/npm/onigasm@2.2.5/lib/onigasm.wasm'); // See https://www.npmjs.com/package/onigasm#light-it-up
-
       const registry = new Registry({
         getGrammarDefinition: async () => {
           const grammarDefinition = readFileSync('./public/latino.tmLanguage.json', 'utf-8');
