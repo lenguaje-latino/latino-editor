@@ -7,8 +7,8 @@ function calculateWindowSize() {
   return {
     width: parseInt(dimensions.width * 0.8),
     height: parseInt(dimensions.height * 0.8),
-    minWidth: parseInt(dimensions.width * 0.8),
-    minHeight: parseInt(dimensions.height * 0.8),
+    minWidth: parseInt(dimensions.width * 0.6),
+    minHeight: parseInt(dimensions.height * 0.6),
   };
 }
 

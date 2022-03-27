@@ -26,9 +26,11 @@ export default {
   mounted() {
     this.init();
 
+    this.$root.$on('fileOpened', this.fileOpened);
     ipcRenderer.on('executeCode', this.executeCode);
   },
   destroyed() {
+    this.$root.$off('fileOpened', this.fileOpened);
     ipcRenderer.removeListener('executeCode', this.executeCode);
   },
   methods: {
@@ -54,12 +56,8 @@ export default {
     },
 
     executeCode(event, filepath) {
-      if (this.ptyProcess && this.ptyProcess.pid) {
-        this.ptyProcess.kill();
-        this.ptyProcess = null;
-      }
+      this.closeTerminal();
 
-      this.clearTerminal();
       this.focusTerminal();
 
       const latinoPath =
@@ -67,8 +65,6 @@ export default {
 
       this.ptyProcess = pty.spawn(latinoPath, [filepath], {
         name: 'xterm-color',
-        // cols: 80,
-        // rows: 30,
         cwd: process.cwd(),
         env: process.env,
       });
@@ -76,6 +72,19 @@ export default {
       this.ptyProcess.on('data', (data) => {
         this.terminal.write(data);
       });
+    },
+
+    fileOpened() {
+      this.closeTerminal();
+    },
+
+    closeTerminal() {
+      if (this.ptyProcess && this.ptyProcess.pid) {
+        this.ptyProcess.kill();
+        this.ptyProcess = null;
+      }
+
+      this.clearTerminal();
     },
 
     clearTerminal() {

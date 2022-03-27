@@ -9,7 +9,7 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 import { readFileSync } from 'fs';
 import { useEditorStore } from '@/stores/editor';
 import { ipcRenderer } from 'electron';
-import { mapActions, mapWritableState } from 'pinia';
+import { mapWritableState } from 'pinia';
 
 export default {
   name: 'Editor',
@@ -27,6 +27,7 @@ export default {
         fontSize: 18,
         language: 'latino',
         renderWhitespace: 'all',
+        roundedSelection: true,
       },
     };
   },
@@ -34,11 +35,9 @@ export default {
     await this.setupMonacoEditor();
 
     this.$root.$on('saveAndExecute', this.saveAndExecute);
-    ipcRenderer.on('fileSaved', this.onFileSaved);
   },
   destroyed() {
     this.$root.$off('saveAndExecute', this.saveAndExecute);
-    ipcRenderer.removeListener('fileSaved', this.onFileSaved);
   },
   computed: {
     ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
@@ -60,10 +59,6 @@ export default {
     },
   },
   methods: {
-    onFileSaved(event, filepath) {
-      this.usingFile(filepath);
-    },
-
     async setupMonacoEditor() {
       const registry = new Registry({
         getGrammarDefinition: async () => {
@@ -104,8 +99,6 @@ export default {
         filepath: this.filepath,
       });
     },
-
-    ...mapActions(useEditorStore, ['usingFile']),
   },
 };
 </script>

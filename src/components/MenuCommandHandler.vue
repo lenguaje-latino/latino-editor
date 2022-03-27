@@ -51,6 +51,10 @@ export default {
 
     async handleOpenFileCommand(args) {
       this.openFile(args.filepath, args.temporary);
+      this.$root.$emit('fileOpened', {
+        filepath: args.filepath,
+        tempoarary: args.tempoarary,
+      });
     },
 
     async handleAskSaveFileCommand() {

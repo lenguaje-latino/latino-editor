@@ -24,6 +24,7 @@ import AppBar from '@/components/AppBar';
 import Editor from '@/components/Editor';
 import Terminal from '@/components/Terminal';
 import MenuCommandHandler from '@/components/MenuCommandHandler';
+import { ipcRenderer } from 'electron';
 
 export default {
   name: 'App',
@@ -35,9 +36,17 @@ export default {
   },
   mounted() {
     this.openTemporaryFile();
+    ipcRenderer.on('fileSaved', this.onFileSaved);
+  },
+  destroyed() {
+    ipcRenderer.removeListener('fileSaved', this.onFileSaved);
   },
   methods: {
-    ...mapActions(useEditorStore, ['openTemporaryFile']),
+    ...mapActions(useEditorStore, ['openTemporaryFile', 'usingFile']),
+
+    onFileSaved(event, filepath) {
+      this.usingFile(filepath);
+    },
   },
 };
 </script>
