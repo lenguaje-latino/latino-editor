@@ -3,20 +3,24 @@
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { createMenu } from '@/background/menu';
-import { openTemporaryFile, saveFile } from '@/background/handleFiles';
-import { calculateWindowSize } from '@/background/calculateWindowSize';
-import { showOpenFileDialog, showSaveFileDialog, showUnsavedFileDialog } from '@/background/dialog';
+import { createMenu } from './background/menu';
+import { openTemporaryFile, saveFile } from './background/handleFiles';
+import { calculateWindowSize } from './background/calculateWindowSize';
+import { showOpenFileDialog, showSaveFileDialog, showUnsavedFileDialog } from './background/dialog';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+let win;
+
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }]);
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { secure: true, standard: true, supportFetchAPI: true } },
+]);
 
 async function createWindow() {
   const windowSize = calculateWindowSize();
 
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     minWidth: windowSize.minWidth,
     width: windowSize.width,
     minHeight: windowSize.minHeight,
@@ -37,7 +41,7 @@ async function createWindow() {
     win.loadURL('app://./index.html');
   }
 
-  win.setMenu(createMenu(win));
+  win.setMenu(createMenu());
 }
 
 app.allowRendererProcessReuse = false; // Necesario para que funcione node-pty.

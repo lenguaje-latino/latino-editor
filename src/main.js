@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import App from './App.vue';
 import pinia from './plugins/pinia';
+import { loadWASM } from 'onigasm';
+
 import './plugins/vue-resize';
 import './plugins/vue-split-view';
 
 import './assets/tailwind.css';
 import './assets/app.css';
-import { loadWASM } from 'onigasm';
 
 Vue.config.productionTip = false;
 

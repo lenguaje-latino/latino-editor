@@ -1,4 +1,5 @@
 import { app, dialog } from 'electron';
+import { join } from 'path';
 
 async function showOpenFileDialog() {
   return await dialog.showOpenDialog({
@@ -16,7 +17,7 @@ async function showSaveFileDialog(filename = null) {
 
   return await dialog.showSaveDialog({
     title: 'Guardar código Latino',
-    defaultPath: app.getPath('home') + '/' + filename,
+    defaultPath: join(app.getPath('home'), filename),
     properties: ['createDirectory'],
     filters: [
       { name: 'Latino', extensions: ['lat'] },

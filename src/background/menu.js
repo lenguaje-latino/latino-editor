@@ -3,7 +3,7 @@ import { Menu } from 'electron';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMac = process.platform === 'darwin';
 
-function createMenu(win) {
+function createMenu() {
   const menuTemplate = [
     {
       label: 'Archivo',
@@ -12,7 +12,7 @@ function createMenu(win) {
           label: 'Nuevo',
           accelerator: 'CommandOrControl+N',
           role: 'new',
-          click: () => {
+          click: (item, win) => {
             win.webContents.send('menu-command', {
               command: 'new-file',
             });
@@ -23,7 +23,7 @@ function createMenu(win) {
           label: 'Abrir',
           accelerator: 'CommandOrControl+O',
           role: 'open',
-          click: async () => {
+          click: async (item, win) => {
             win.webContents.send('menu-command', {
               command: 'ask-open-file',
             });
@@ -34,7 +34,7 @@ function createMenu(win) {
           label: 'Guardar',
           accelerator: 'CommandOrControl+S',
           role: 'save',
-          click: async () => {
+          click: async (item, win) => {
             win.webContents.send('menu-command', {
               command: 'ask-save-file',
             });
@@ -45,7 +45,7 @@ function createMenu(win) {
           label: 'Guardar cómo...',
           accelerator: 'CommandOrControl+Shift+S',
           role: 'saveAs',
-          click: async () => {
+          click: async (item, win) => {
             win.webContents.send('menu-command', {
               command: 'save-file-as',
             });
@@ -64,54 +64,56 @@ function createMenu(win) {
       ],
     },
 
-    {
-      label: 'Editar',
-      submenu: [
-        {
-          label: 'Deshacer',
-          role: 'undo',
-        },
-        {
-          label: 'Rehacer',
-          role: 'redo',
-        },
-        {
-          type: 'separator',
-        },
-        {
-          label: 'Cortar',
-          role: 'cut',
-        },
-        {
-          label: 'Copiar',
-          role: 'copy',
-        },
-        {
-          label: 'Pegar',
-          role: 'paste',
-        },
-        {
-          label: 'Seleccionar todo',
-          role: 'selectall',
-        },
-      ],
-    },
+    // {
+    //   label: 'Editar',
+    //   submenu: [
+    //     {
+    //       label: 'Deshacer',
+    //       role: 'undo',
+    //     },
+    //     {
+    //       label: 'Rehacer',
+    //       role: 'redo',
+    //     },
+    //     {
+    //       type: 'separator',
+    //     },
+    //     {
+    //       label: 'Cortar',
+    //       role: 'cut',
+    //     },
+    //     {
+    //       label: 'Copiar',
+    //       role: 'copy',
+    //     },
+    //     {
+    //       label: 'Pegar',
+    //       role: 'paste',
+    //     },
+    //     {
+    //       label: 'Seleccionar todo',
+    //       role: 'selectall',
+    //     },
+    //   ],
+    // },
 
     {
       label: 'Ventana',
       role: 'window',
       submenu: [
-        isDevelopment
-          ? {
-              label: 'Reload',
-              accelerator: 'CmdOrCtrl+R',
-              click: function (item, focusedWindow) {
-                if (focusedWindow) {
-                  focusedWindow.reload();
-                }
+        ...(isDevelopment
+          ? [
+              {
+                label: 'Reload',
+                accelerator: 'CmdOrCtrl+R',
+                click: function (item, focusedWindow) {
+                  if (focusedWindow) {
+                    focusedWindow.reload();
+                  }
+                },
               },
-            }
-          : {},
+            ]
+          : []),
         {
           label: 'Minimizar',
           accelerator: 'CmdOrCtrl+M',
@@ -130,6 +132,8 @@ function createMenu(win) {
       submenu: [
         {
           label: 'Acerca de',
+          role: 'help',
+          accelerator: 'F11',
           click: async () => {
             const { shell } = require('electron');
             await shell.openExternal('https://latinoeditor.enzonotario.me');

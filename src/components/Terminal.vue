@@ -9,9 +9,11 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
+import getPlatform from '@/get-platform';
+import appRootDir from 'app-root-dir';
+import { dirname, join } from 'path';
 
 const pty = require('node-pty');
-const path = require('path');
 const { ipcRenderer } = require('electron');
 
 export default {
@@ -61,7 +63,9 @@ export default {
       this.focusTerminal();
 
       const latinoPath =
-        process.env.NODE_ENV === 'production' ? path.join(__dirname, 'bin/linux/latino') : './bin/linux/latino';
+        process.env.NODE_ENV === 'production'
+          ? join(dirname(appRootDir.get()), 'Resources', 'bin', this.getBinary())
+          : join(appRootDir.get(), 'resources', getPlatform(), this.getBinary());
 
       this.ptyProcess = pty.spawn(latinoPath, [filepath], {
         name: 'xterm-color',
@@ -102,6 +106,14 @@ export default {
     onResizeDebounced: debounce(function () {
       this.fitTerminal();
     }, 10),
+
+    getBinary() {
+      if ('win' === getPlatform()) {
+        return 'latino.exe';
+      }
+
+      return 'latino';
+    },
   },
 };
 </script>

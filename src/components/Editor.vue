@@ -10,6 +10,8 @@ import { readFileSync } from 'fs';
 import { useEditorStore } from '@/stores/editor';
 import { ipcRenderer } from 'electron';
 import { mapWritableState } from 'pinia';
+import { dirname, join } from 'path';
+import appRootDir from 'app-root-dir';
 
 export default {
   name: 'Editor',
@@ -62,7 +64,13 @@ export default {
     async setupMonacoEditor() {
       const registry = new Registry({
         getGrammarDefinition: async () => {
-          const grammarDefinition = readFileSync('./public/latino.tmLanguage.json', 'utf-8');
+          const grammarFilepath =
+            process.env.NODE_ENV === 'production'
+              ? join(dirname(appRootDir.get()), 'Resources', 'latino.tmLanguage.json')
+              : join(appRootDir.get(), 'resources', 'latino.tmLanguage.json');
+
+          const grammarDefinition = readFileSync(grammarFilepath, 'utf-8');
+
           return {
             format: 'json',
             content: grammarDefinition,
