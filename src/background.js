@@ -88,7 +88,7 @@ ipcMain.on('executeCode', (event, args) => {
   event.sender.send('executeCode', args.filepath);
 });
 
-ipcMain.on('showOpenDialog', async (event, args) => {
+ipcMain.on('showOpenDialog', async (event) => {
   const openFileDialog = await showOpenFileDialog();
 
   if (openFileDialog.canceled || !openFileDialog || !openFileDialog.filePaths.length) {
