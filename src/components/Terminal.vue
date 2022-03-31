@@ -62,7 +62,7 @@ export default {
 
       this.focusTerminal();
 
-      this.ptyProcess = pty.spawn(this.getCommand(), this.getCommandArgs(), {
+      this.ptyProcess = pty.spawn(this.getCommand(), this.getCommandArgs(filepath), {
         name: 'xterm-color',
         cwd: process.cwd(),
         env: process.env,
