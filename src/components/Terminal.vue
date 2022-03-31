@@ -9,12 +9,12 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
+import { ipcRenderer } from 'electron';
 import getPlatform from '@/get-platform';
 import appRootDir from 'app-root-dir';
 import { dirname, join } from 'path';
 
 const pty = require('node-pty');
-const { ipcRenderer } = require('electron');
 
 export default {
   name: 'Terminal',
@@ -62,12 +62,7 @@ export default {
 
       this.focusTerminal();
 
-      const latinoPath =
-        process.env.NODE_ENV === 'production'
-          ? join(dirname(appRootDir.get()), 'Resources', 'bin', this.getBinary())
-          : join(appRootDir.get(), 'resources', getPlatform(), this.getBinary());
-
-      this.ptyProcess = pty.spawn(latinoPath, [filepath], {
+      this.ptyProcess = pty.spawn(this.getCommand(), this.getCommandArgs(), {
         name: 'xterm-color',
         cwd: process.cwd(),
         env: process.env,
@@ -107,12 +102,20 @@ export default {
       this.fitTerminal();
     }, 10),
 
-    getBinary() {
+    getCommand() {
       if ('win' === getPlatform()) {
-        return 'latino.exe';
+        return 'powershell.exe';
       }
+      return process.env.NODE_ENV === 'production'
+        ? join(dirname(appRootDir.get()), 'Resources', 'bin', 'latino')
+        : join(appRootDir.get(), 'resources', getPlatform(), 'latino');
+    },
 
-      return 'latino';
+    getCommandArgs(filepath) {
+      if ('win' === getPlatform()) {
+        return ['latino', filepath];
+      }
+      return [filepath];
     },
   },
 };

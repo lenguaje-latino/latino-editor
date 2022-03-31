@@ -25,6 +25,7 @@ module.exports = {
       externals: ['node-pty'], // this excludes the node-pty from the front end
       builderOptions: {
         productName: 'LatinoEditor',
+
         extraFiles: [
           {
             from: 'resources/${os}',
@@ -36,6 +37,10 @@ module.exports = {
             to: 'Resources/latino.tmLanguage.json',
           },
         ],
+
+        win: {
+          target: ['portable', 'nsis'],
+        },
       },
     },
   },
