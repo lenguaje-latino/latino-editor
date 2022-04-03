@@ -3,14 +3,16 @@
 import { app, BrowserWindow, ipcMain, protocol } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { createMenu } from './background/menu';
-import { openTemporaryFile, saveFile } from './background/handleFiles';
-import { calculateWindowSize } from './background/calculateWindowSize';
-import { showOpenFileDialog, showSaveFileDialog, showUnsavedFileDialog } from './background/dialog';
+import { createMenu } from '@/background/menu';
+import { openTemporaryFile, saveFile } from '@/background/handleFiles';
+import { calculateWindowSize } from '@/background/calculateWindowSize';
+import { showOpenFileDialog, showSaveFileDialog, showUnsavedFileDialog } from '@/background/dialog';
+import { killProcess, runProcess } from '@/background/pty';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 let win;
+let ptyProcess;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -141,6 +143,24 @@ ipcMain.on('openTemporaryFile', (event, args) => {
     filepath,
     temporary: true,
   });
+});
+
+ipcMain.on('runCommand', (event, args) => {
+  killProcess(ptyProcess);
+
+  ptyProcess = runProcess(args.command, args.commandArgs);
+
+  ptyProcess.onData((data) => {
+    event.sender.send('pty.onData', data);
+  });
+});
+
+ipcMain.on('terminalKeystroke', (event, args) => {
+  if (!ptyProcess) {
+    return;
+  }
+
+  ptyProcess.write(args.data);
 });
 
 // Exit cleanly on request from parent process in development mode.

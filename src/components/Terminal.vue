@@ -14,15 +14,12 @@ import getPlatform from '@/get-platform';
 import appRootDir from 'app-root-dir';
 import { dirname, join } from 'path';
 
-const pty = require('node-pty');
-
 export default {
   name: 'Terminal',
   data() {
     return {
       terminal: null,
       fitAddon: null,
-      ptyProcess: null,
     };
   },
   mounted() {
@@ -30,10 +27,12 @@ export default {
 
     this.$root.$on('fileOpened', this.fileOpened);
     ipcRenderer.on('executeCode', this.executeCode);
+    ipcRenderer.on('pty.onData', this.onPtyData);
   },
   destroyed() {
     this.$root.$off('fileOpened', this.fileOpened);
     ipcRenderer.removeListener('executeCode', this.executeCode);
+    ipcRenderer.removeListener('pty.onData', this.onPtyData);
   },
   methods: {
     init() {
@@ -49,40 +48,28 @@ export default {
       this.fitTerminal();
 
       this.terminal.onData((data) => {
-        if (!this.ptyProcess) {
-          return;
-        }
-
-        this.ptyProcess.write(data);
+        ipcRenderer.send('terminalKeystroke', {
+          data,
+        });
       });
     },
 
     executeCode(event, filepath) {
-      this.closeTerminal();
+      this.clearTerminal();
 
       this.focusTerminal();
 
-      this.ptyProcess = pty.spawn(this.getCommand(), this.getCommandArgs(filepath), {
-        name: 'xterm-color',
-        cwd: process.cwd(),
-        env: process.env,
+      ipcRenderer.send('runCommand', {
+        command: this.getCommand(),
+        commandArgs: this.getCommandArgs(filepath),
       });
+    },
 
-      this.ptyProcess.on('data', (data) => {
-        this.terminal.write(data);
-      });
+    onPtyData(event, data) {
+      this.terminal.write(data);
     },
 
     fileOpened() {
-      this.closeTerminal();
-    },
-
-    closeTerminal() {
-      if (this.ptyProcess && this.ptyProcess.pid) {
-        this.ptyProcess.kill();
-        this.ptyProcess = null;
-      }
-
       this.clearTerminal();
     },
 
