@@ -91,7 +91,7 @@ export default {
 
     getCommand() {
       if ('win' === getPlatform()) {
-        return 'powershell.exe';
+        return 'latino.exe';
       }
       return process.env.NODE_ENV === 'production'
         ? join(dirname(appRootDir.get()), 'Resources', 'bin', 'latino')
@@ -99,9 +99,6 @@ export default {
     },
 
     getCommandArgs(filepath) {
-      if ('win' === getPlatform()) {
-        return ['latino', filepath];
-      }
       return [filepath];
     },
   },
