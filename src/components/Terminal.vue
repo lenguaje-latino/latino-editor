@@ -7,6 +7,7 @@
 <script>
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { WebLinksAddon } from 'xterm-addon-web-links';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
 import { ipcRenderer } from 'electron';
@@ -42,6 +43,7 @@ export default {
 
       this.fitAddon = new FitAddon();
       this.terminal.loadAddon(this.fitAddon);
+      this.terminal.loadAddon(new WebLinksAddon());
 
       this.terminal.open(document.getElementById('terminal'));
 

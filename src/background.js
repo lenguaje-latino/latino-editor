@@ -155,7 +155,10 @@ ipcMain.on('runCommand', (event, args) => {
       event.sender.send('pty.onData', data);
     });
   } else {
-    event.sender.send('pty.onData', 'Ocurrió un error. Por favor verifica que Latino esté instalado en tu sistema.');
+    event.sender.send(
+      'pty.onData',
+      'Ocurrió un error. Por favor verifica que Latino esté instalado en tu sistema. Puedes descargarlo desde https://www.lenguajelatino.org/p/descarga.html',
+    );
   }
 });
 
