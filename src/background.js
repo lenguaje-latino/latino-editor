@@ -150,9 +150,13 @@ ipcMain.on('runCommand', (event, args) => {
 
   ptyProcess = runProcess(args.command, args.commandArgs);
 
-  ptyProcess.onData((data) => {
-    event.sender.send('pty.onData', data);
-  });
+  if (ptyProcess) {
+    ptyProcess.onData((data) => {
+      event.sender.send('pty.onData', data);
+    });
+  } else {
+    event.sender.send('pty.onData', 'Ocurrió un error. Por favor verifica que Latino esté instalado en tu sistema.');
+  }
 });
 
 ipcMain.on('terminalKeystroke', (event, args) => {
