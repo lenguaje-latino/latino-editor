@@ -90,12 +90,11 @@ export default {
     }, 10),
 
     getCommand() {
-      if ('win' === getPlatform()) {
-        return 'latino.exe';
-      }
+      const binary = 'win' === getPlatform() ? 'latino.exe' : 'latino';
+
       return process.env.NODE_ENV === 'production'
-        ? join(dirname(appRootDir.get()), 'Resources', 'bin', 'latino')
-        : join(appRootDir.get(), 'resources', getPlatform(), 'latino');
+        ? join(dirname(appRootDir.get()), 'Resources', 'bin', binary)
+        : join(appRootDir.get(), 'resources', getPlatform(), binary);
     },
 
     getCommandArgs(filepath) {
