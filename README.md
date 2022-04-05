@@ -9,7 +9,7 @@ Este editor de código no es oficial, y es desarrollado por [Enzo Notario](https
 ## Descargar
 
 ### Windows
-> Para que LatinoEditor funcione, es necesario instalar previamente el [Lenguaje Latino](https://github.com/MelvinG24/Latino/releases/download/v1.4.1/Latino-1.4.1-Win.exe).
+> Para ejecutar el código en LatinoEditor, es necesario instalar previamente el [Lenguaje Latino](https://github.com/MelvinG24/Latino/releases/download/v1.4.1/Latino-1.4.1-Win.exe).
 
 - Descargar para [Windows (versión portable)](https://github.com/enzonotario/latino-editor/releases/download/v0.0.1-alpha.0/LatinoEditor.0.0.1-alpha.0.exe)
 - Descargar para [Windows (instalador)](https://github.com/enzonotario/latino-editor/releases/download/v0.0.1-alpha.0/LatinoEditor.Instalador.0.0.1-alpha.0.exe)
