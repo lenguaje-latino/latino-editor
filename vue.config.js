@@ -41,6 +41,10 @@ module.exports = {
         win: {
           target: ['portable', 'nsis'],
         },
+
+        linux: {
+          target: ['AppImage', 'snap', 'deb'],
+        },
       },
     },
   },
