@@ -1,6 +1,6 @@
 # LatinoEditor
 
-Editor de código para el lenguaje [Latino](https://www.lenguajelatino.org/).
+Editor de código para el [Lenguaje Latino](https://www.lenguajelatino.org/), desarrollado por [Melvin Guerrero](https://melvinguerrero.blogspot.com/).
 
 Este editor de código no es oficial, y es desarrollado por [Enzo Notario](https://enzonotario.me).
 
@@ -18,3 +18,7 @@ Este editor de código no es oficial, y es desarrollado por [Enzo Notario](https
 - Descargar para [Linux (AppImage)](https://github.com/enzonotario/latino-editor/releases/download/v0.0.1-alpha.0/LatinoEditor-0.0.1-alpha.0.AppImage)
 - Descargar para [Linux (snap)](https://github.com/enzonotario/latino-editor/releases/download/v0.0.1-alpha.0/latino-editor_0.0.1-alpha.0_amd64.snap)
 - Descargar para [Linux (deb)](https://github.com/enzonotario/latino-editor/releases/download/v0.0.1-alpha.0/latino-editor_0.0.1-alpha.0_amd64.deb)
+
+## Documentación
+
+LatinoEditor sólo permite ejecutar código Latino. Para más información, dirigirse al [Manual de Latino](https://manual.lenguajelatino.org/es/stable/).
