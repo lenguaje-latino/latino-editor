@@ -5,10 +5,7 @@ function runProcess(command, args) {
     return pty.spawn(command, args, {
       name: 'xterm-color',
       cwd: process.cwd(),
-      env: {
-        ...process.env,
-        SystemRoot: 'C:\\WINDOWS',
-      },
+      env: process.env,
     });
   } catch (error) {
     return null;
