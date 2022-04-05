@@ -1,7 +1,10 @@
 {
-  "name": "latino-editor-electron",
+  "name": "latino-editor",
   "version": "0.0.1-alpha.0",
-  "private": true,
+  "license": "MIT",
+  "repository": "https://github.com/enzonotario/latino-editor.git",
+  "homepage": "https://latinoeditor.enzonotario.me",
+  "author": "Enzo Notario <hi@enzonotario.me>",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
