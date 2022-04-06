@@ -22,3 +22,24 @@ Este editor de código no es oficial, y es desarrollado por [Enzo Notario](https
 ## Documentación
 
 LatinoEditor sólo permite ejecutar código Latino. Para más información, dirigirse al [Manual de Latino](https://manual.lenguajelatino.org/es/stable/).
+
+## Compilar Editor
+
+### Compilar editor en Windows:
+Pasos:
+#### instalar Windows SDK para windows
+	> https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
+	> Tambine se puede instalar desde el Visual Studio
+#### Instalar NodeJS
+#### Despues de NodeJS ejecutar la siguiente linea de codigo:
+	>>> CMD como Administrador <<<
+	> npm install --global --production windows-build-tools
+#### Clonar Repo
+	>>> abrir CMD como Administrador <<<
+	>>> ejecutar en la terminal el siguiente codigo
+	> npm i
+#### Ejecutar el siguiente codigo:
+	> npm run eletron:serve
+#### (Para compilar):
+	>>> ubicacion: dist_electron <<<
+	> npm run eletron:build
