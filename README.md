@@ -49,7 +49,7 @@ Toda buena contribución es bienvenida. Hay varias maneras en las cuales puedes 
 
 Si deseas contribuir en este proyecto proponiendo sugerencias o aportando al código fuente, te dejamos el siguiente enlace:
 
-* [Como compilar Latino-editor](https://github.com/lenguaje-latino/latino-editor/.readme/Como_Compilar.md)
+* [Como compilar Latino-editor](https://github.com/lenguaje-latino/latino-editor/blob/main/.readme/Como_Compilar.md)
 
 ## Licensia
 Licenciado bajo la licencia
