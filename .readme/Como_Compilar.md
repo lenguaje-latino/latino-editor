@@ -12,10 +12,10 @@
 ### Pasos a seguir:
 
 * Abrir CMD como **Administrador** y escribir la siguiente línea.
-> npm install --global --production windows-build-tools
-
+```
+npm install --global --production windows-build-tools
+```
 * Después de la instalación pasamos a clonar el repo del editor e instalar las demas dependencias desde nodeJS.
-
 ```
 > git clone https://github.com/lenguaje-latino/latino-editor
 > cd latino-editor
