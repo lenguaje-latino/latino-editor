@@ -56,4 +56,6 @@ module.exports = {
       },
     ]);
   },
+
+  transpileDependencies: ['vuetify'],
 };
