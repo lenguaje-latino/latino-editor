@@ -8,7 +8,7 @@
 
 Editor de código para el [Lenguaje Latino](https://www.lenguajelatino.org/), versión web [editor-enlinea](https://editor.lenguajelatino.org/) desarrollado por [Melvin Guerrero](https://github.com/MelvinG24).
 
-Este editor de código ~~no~~ **es oficial**, y es desarrollado por [Enzo Notario](https://enzonotario.me) en colaboración de [Melvin Guerrero](https://github.com/MelvinG24).
+Este editor de código ~~no~~ **es oficial**, y es desarrollado por [Enzo Notario](https://enzonotario.me).
 
 ## Editor Latino
 ![image](https://user-images.githubusercontent.com/10469299/161657579-8a119db5-042c-486d-9d2b-3f22925bbc56.png)
