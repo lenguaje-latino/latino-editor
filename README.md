@@ -51,5 +51,5 @@ Si deseas contribuir en este proyecto proponiendo sugerencias o aportando al có
 
 * [Como compilar Latino-editor](https://github.com/lenguaje-latino/latino-editor/blob/main/.readme/Como_Compilar.md)
 
-## Licensia
+## Licencia
 Licenciado bajo la licencia [MIT](https://github.com/lenguaje-latino/latino-editor/blob/main/LICENSE)
