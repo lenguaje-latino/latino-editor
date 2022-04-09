@@ -30,6 +30,8 @@ function createMenu() {
           },
         },
 
+        { type: 'separator' },
+
         {
           label: 'Guardar',
           accelerator: 'CommandOrControl+S',
@@ -52,6 +54,8 @@ function createMenu() {
           },
         },
 
+        { type: 'separator' },
+
         isMac
           ? {
               label: 'Salir',
@@ -64,38 +68,50 @@ function createMenu() {
       ],
     },
 
-    // {
-    //   label: 'Editar',
-    //   submenu: [
-    //     {
-    //       label: 'Deshacer',
-    //       role: 'undo',
-    //     },
-    //     {
-    //       label: 'Rehacer',
-    //       role: 'redo',
-    //     },
-    //     {
-    //       type: 'separator',
-    //     },
-    //     {
-    //       label: 'Cortar',
-    //       role: 'cut',
-    //     },
-    //     {
-    //       label: 'Copiar',
-    //       role: 'copy',
-    //     },
-    //     {
-    //       label: 'Pegar',
-    //       role: 'paste',
-    //     },
-    //     {
-    //       label: 'Seleccionar todo',
-    //       role: 'selectall',
-    //     },
-    //   ],
-    // },
+    {
+      label: 'Editar',
+      submenu: [
+        {
+          label: 'Deshacer',
+          role: 'undo',
+        },
+        {
+          label: 'Rehacer',
+          role: 'redo',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          label: 'Cortar',
+          role: 'cut',
+        },
+        {
+          label: 'Copiar',
+          role: 'copy',
+        },
+        {
+          label: 'Pegar',
+          role: 'paste',
+        },
+        { type: 'separator' },
+        {
+          label: 'Seleccionar todo',
+          role: 'selectall'
+        },
+      ],
+    },
+
+    {
+      label: 'Ver',
+      submenu: [
+        { label: 'restablecer vista', role: 'resetzoom' },
+        { label: 'acercamiento', role: 'zoomin' },
+        { label: 'alejamiento', role: 'zoomout' },
+        { type: 'separator' },
+        { label: 'Pantalla completa', role: 'togglefullscreen' }
+      ]
+  },
 
     {
       label: 'Ventana',
@@ -131,9 +147,31 @@ function createMenu() {
       label: 'Ayuda',
       submenu: [
         {
-          label: 'Acerca de',
+          label: 'Documentacion',
+          accelerator: 'F1',
+        },
+
+        {
+          label: 'Repo (Github)',
+          click: async () => {
+            const { shell} = require('electron');
+            await shell.openExternal('https://github.com/lenguaje-latino/latino-editor');
+          }
+        },
+
+        { type: 'separator' },
+
+        {
+          label: 'Herramientas de desarrollo',
+          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+          click (item, focusedWindow) { if (focusedWindow) focusedWindow.webContents.toggleDevTools() }
+        },
+
+        { type: 'separator' },
+
+        {
+          label: 'Acerca del programa',
           role: 'help',
-          accelerator: 'F11',
           click: async () => {
             const { shell } = require('electron');
             await shell.openExternal('https://latinoeditor.enzonotario.me');
