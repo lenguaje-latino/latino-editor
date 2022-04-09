@@ -7,7 +7,7 @@ import MonacoEditor, { monaco } from 'monaco-editor-vue';
 import { useEditorStore } from '@/stores/editor';
 import { ipcRenderer } from 'electron';
 import { mapWritableState } from 'pinia';
-import latinoSyntax from './latino_syntax';
+import latinoSyntax from '../assets/latino_syntax';
 
 export default {
   name: 'Editor',
