@@ -27,7 +27,6 @@
     "monaco-editor-webpack-plugin": "1.8.*",
     "monaco-textmate": "^3.0.1",
     "node-pty": "^0.10.1",
-    "onigasm": "^2.2.5",
     "pinia": "^2.0.12",
     "prettier": "^2.5.1",
     "regenerator-runtime": "^0.13.9",
