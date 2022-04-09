@@ -8,6 +8,7 @@ import { openTemporaryFile, saveFile } from '@/background/handleFiles';
 import { calculateWindowSize } from '@/background/calculateWindowSize';
 import { showOpenFileDialog, showSaveFileDialog, showUnsavedFileDialog } from '@/background/dialog';
 import { killProcess, runProcess } from '@/background/pty';
+import { join } from 'path';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -27,6 +28,8 @@ async function createWindow() {
     width: windowSize.width,
     minHeight: windowSize.minHeight,
     height: windowSize.height,
+    // eslint-disable-next-line no-undef
+    icon: join(__static, '/icon.png'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
