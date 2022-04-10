@@ -4,6 +4,7 @@ import pinia from './plugins/pinia';
 
 import './plugins/vue-resize';
 import './plugins/vue-split-view';
+import './plugins/vue-socket.io';
 
 import './assets/tailwind.css';
 import './assets/app.css';

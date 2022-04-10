@@ -30,44 +30,24 @@
         </vue-split-view>
       </v-layout>
     </v-main>
-
-    <MenuCommandHandler></MenuCommandHandler>
   </v-app>
 </template>
 
 <script>
-import { useEditorStore } from '@/stores/editor';
-import { mapActions } from 'pinia';
 import AppBar from '@/components/AppBar';
 import Editor from '@/components/Editor';
 import Terminal from '@/components/Terminal';
-import MenuCommandHandler from '@/components/MenuCommandHandler';
-import { ipcRenderer } from 'electron';
 
 export default {
   name: 'App',
   components: {
-    MenuCommandHandler,
     Terminal,
     Editor,
     AppBar,
   },
-  mounted() {
-    this.openTemporaryFile();
-    ipcRenderer.on('fileSaved', this.onFileSaved);
-  },
-  destroyed() {
-    ipcRenderer.removeListener('fileSaved', this.onFileSaved);
-  },
   methods: {
-    ...mapActions(useEditorStore, ['openTemporaryFile', 'usingFile']),
-
-    onFileSaved(event, filepath) {
-      this.usingFile(filepath);
-    },
-
     execute() {
-      this.$root.$emit('saveAndExecute');
+      this.$root.$emit('executeCode');
     },
   },
 };

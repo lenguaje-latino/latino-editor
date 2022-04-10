@@ -10,10 +10,8 @@ import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
-import { ipcRenderer } from 'electron';
-import getPlatform from '@/get-platform';
-import appRootDir from 'app-root-dir';
-import { dirname, join } from 'path';
+import { mapState } from 'pinia';
+import { useEditorStore } from '@/stores/editor';
 
 export default {
   name: 'Terminal',
@@ -27,13 +25,18 @@ export default {
     this.init();
 
     this.$root.$on('fileOpened', this.fileOpened);
-    ipcRenderer.on('executeCode', this.executeCode);
-    ipcRenderer.on('pty.onData', this.onPtyData);
+    this.$root.$on('executeCode', this.executeCode);
+
+    this.$socket.$subscribe('output', this.onPtyData);
   },
   destroyed() {
     this.$root.$off('fileOpened', this.fileOpened);
-    ipcRenderer.removeListener('executeCode', this.executeCode);
-    ipcRenderer.removeListener('pty.onData', this.onPtyData);
+    this.$root.$off('executeCode', this.executeCode);
+
+    this.$socket.$unsubscribe('output');
+  },
+  computed: {
+    ...mapState(useEditorStore, ['code']),
   },
   methods: {
     init() {
@@ -50,24 +53,17 @@ export default {
       this.fitTerminal();
 
       this.terminal.onData((data) => {
-        ipcRenderer.send('terminalKeystroke', {
-          data,
-        });
+        this.$socket.client.emit('input', data);
       });
     },
 
-    executeCode(event, filepath) {
+    executeCode() {
       this.clearTerminal();
-
       this.focusTerminal();
-
-      ipcRenderer.send('runCommand', {
-        command: this.getCommand(),
-        commandArgs: this.getCommandArgs(filepath),
-      });
+      this.$socket.client.emit('execute', this.code);
     },
 
-    onPtyData(event, data) {
+    onPtyData(data) {
       this.terminal.write(data);
     },
 
@@ -90,18 +86,6 @@ export default {
     onResizeDebounced: debounce(function () {
       this.fitTerminal();
     }, 10),
-
-    getCommand() {
-      const binary = 'win' === getPlatform() ? 'latino.exe' : 'latino';
-
-      return process.env.NODE_ENV === 'production'
-        ? join(dirname(appRootDir.get()), 'Resources', 'bin', binary)
-        : join(appRootDir.get(), 'resources', getPlatform(), binary);
-    },
-
-    getCommandArgs(filepath) {
-      return [filepath];
-    },
   },
 };
 </script>
