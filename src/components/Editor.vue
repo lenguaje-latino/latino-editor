@@ -22,7 +22,7 @@ export default {
         horizontal: 'visible',
         theme: 'vs-dark',
         fontFamily: 'Fira Code',
-        fontSize: 18,
+        fontSize: 14,
         language: 'latino',
         renderWhitespace: 'all',
         roundedSelection: true,
