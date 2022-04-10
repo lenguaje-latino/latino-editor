@@ -1,7 +1,5 @@
 import { Menu } from 'electron';
-import path, { join } from 'path';
-
-const openAboutWindow = require('electron-about-window').default;
+import { join } from 'path';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMac = process.platform === 'darwin';
@@ -100,7 +98,7 @@ function createMenu() {
         { type: 'separator' },
         {
           label: 'Seleccionar todo',
-          role: 'selectall'
+          role: 'selectall',
         },
       ],
     },
@@ -112,8 +110,8 @@ function createMenu() {
         { label: 'acercamiento', role: 'zoomin' },
         { label: 'alejamiento', role: 'zoomout' },
         { type: 'separator' },
-        { label: 'Pantalla completa', role: 'togglefullscreen' }
-      ]
+        { label: 'Pantalla completa', role: 'togglefullscreen' },
+      ],
     },
 
     {
@@ -157,36 +155,44 @@ function createMenu() {
         {
           label: 'Repo (Github)',
           click: async () => {
-            const { shell} = require('electron');
+            const { shell } = require('electron');
             await shell.openExternal('https://github.com/lenguaje-latino/latino-editor');
-          }
+          },
         },
+
+        ...(isDevelopment
+          ? [
+              { type: 'separator' },
+
+              {
+                label: 'Herramientas de desarrollo',
+                accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                click(item, focusedWindow) {
+                  if (focusedWindow) {
+                    focusedWindow.webContents.toggleDevTools();
+                  }
+                },
+              },
+            ]
+          : []),
 
         { type: 'separator' },
 
-        {
-          label: 'Herramientas de desarrollo',
-          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-          click (item, focusedWindow) { if (focusedWindow) focusedWindow.webContents.toggleDevTools() }
-        },
-
-        { type: 'separator' },
-
-        // {
-        //   label: 'Acerca del programa',
-        //   role: 'help',
-        //   click: async () => {
-        //     const { shell } = require('electron');
-        //     await shell.openExternal('https://latinoeditor.enzonotario.me');
-        //   },
         {
           label: 'Acerca del programa',
-          click: (item, focusedWindow) =>
+          click: (item, focusedWindow) => {
+            const openAboutWindow = require('electron-about-window').default;
+
             openAboutWindow({
+              // eslint-disable-next-line no-undef
               icon_path: join(__static, 'icon.png'),
               description: 'Editor de texto para el Lenguaje Latino',
               copyright: 'Copyleft (c) 2022, Lenguaje Latino',
               package_json_dir: __dirname,
+              // eslint-disable-next-line no-undef
+              about_page_dir: __static,
+              // eslint-disable-next-line no-undef
+              css_path: __static + '/about-window.ui.css',
               bug_report_url: 'https://github.com/lenguaje-latino/latino-editor/issues',
               homepage: 'https://github.com/lenguaje-latino/latino-editor',
               license: 'MIT',
@@ -203,7 +209,8 @@ function createMenu() {
               },
               use_version_info: true,
               show_close_button: 'Cerrar',
-            }),
+            });
+          },
         },
       ],
     },
