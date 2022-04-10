@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { ipcRenderer } from 'electron';
 import { basename } from 'path';
 
-const defaultCode = '# Código Latino...';
+const defaultCode = 'escribir("Hola mundo, Latino!")';
 
 export const useEditorStore = defineStore('editor', {
   state: () => ({

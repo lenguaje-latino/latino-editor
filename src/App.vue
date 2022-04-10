@@ -1,20 +1,38 @@
 <template>
-  <div id="app">
-    <div class="w-full h-screen flex flex-col bg-gray-800 text-white overflow-hidden">
-      <AppBar></AppBar>
+  <v-app id="app">
+    <v-navigation-drawer permanent app clipped floating width="48">
+      <v-layout column align-center class="min-h-full py-2 space-y-2">
+        <v-btn color="primary" fab small depressed @click="execute">
+          <v-icon size="32">mdi-play</v-icon>
+        </v-btn>
 
-      <vue-split-view class="flex flex-grow flex-row">
-        <template #A>
-          <Editor></Editor>
-        </template>
-        <template #B>
-          <Terminal></Terminal>
-        </template>
-      </vue-split-view>
-    </div>
+        <v-spacer></v-spacer>
+
+        <v-btn fab small depressed>
+          <v-icon size="24">mdi-cog-outline</v-icon>
+        </v-btn>
+      </v-layout>
+    </v-navigation-drawer>
+
+    <v-app-bar app dense flat clipped-left class="AppBar">
+      <AppBar></AppBar>
+    </v-app-bar>
+
+    <v-main>
+      <v-layout column class="w-full h-full flex flex-col overflow-hidden">
+        <vue-split-view class="flex flex-grow flex-row">
+          <template #A>
+            <Editor></Editor>
+          </template>
+          <template #B>
+            <Terminal></Terminal>
+          </template>
+        </vue-split-view>
+      </v-layout>
+    </v-main>
 
     <MenuCommandHandler></MenuCommandHandler>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -47,8 +65,22 @@ export default {
     onFileSaved(event, filepath) {
       this.usingFile(filepath);
     },
+
+    execute() {
+      this.$root.$emit('saveAndExecute');
+    },
   },
 };
 </script>
 
-<style></style>
+<style lang="scss">
+html {
+  overflow: hidden;
+}
+
+.AppBar {
+  .v-toolbar__content {
+    padding: 0;
+  }
+}
+</style>

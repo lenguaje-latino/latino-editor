@@ -4,14 +4,10 @@
 
 <script>
 import MonacoEditor, { monaco } from 'monaco-editor-vue';
-import { Registry } from 'monaco-textmate';
-import { wireTmGrammars } from 'monaco-editor-textmate';
-import { readFileSync } from 'fs';
 import { useEditorStore } from '@/stores/editor';
 import { ipcRenderer } from 'electron';
 import { mapWritableState } from 'pinia';
-import { dirname, join } from 'path';
-import appRootDir from 'app-root-dir';
+import latinoSyntax from '../assets/latino_syntax';
 
 export default {
   name: 'Editor',
@@ -26,7 +22,7 @@ export default {
         horizontal: 'visible',
         theme: 'vs-dark',
         fontFamily: 'Fira Code',
-        fontSize: 18,
+        fontSize: 14,
         language: 'latino',
         renderWhitespace: 'all',
         roundedSelection: true,
@@ -62,32 +58,17 @@ export default {
   },
   methods: {
     async setupMonacoEditor() {
-      const registry = new Registry({
-        getGrammarDefinition: async () => {
-          const grammarFilepath =
-            process.env.NODE_ENV === 'production'
-              ? join(dirname(appRootDir.get()), 'Resources', 'latino.tmLanguage.json')
-              : join(appRootDir.get(), 'resources', 'latino.tmLanguage.json');
-
-          const grammarDefinition = readFileSync(grammarFilepath, 'utf-8');
-
-          return {
-            format: 'json',
-            content: grammarDefinition,
-          };
-        },
-      });
-
-      const grammars = new Map();
-      grammars.set('latino', 'source.latino');
-
-      monaco.languages.register({ id: 'latino' });
-
-      await wireTmGrammars(monaco, registry, grammars, this.$refs.editor.editor);
+      this.setupMonacoLanguage();
 
       this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
         this.saveAndExecute();
       });
+    },
+
+    setupMonacoLanguage() {
+      monaco.languages.register({ id: 'latino' });
+
+      monaco.languages.setMonarchTokensProvider('latino', latinoSyntax);
     },
 
     saveAndExecute() {
