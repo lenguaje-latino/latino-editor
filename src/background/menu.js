@@ -97,7 +97,7 @@ function createMenu() {
         { type: 'separator' },
         {
           label: 'Seleccionar todo',
-          role: 'selectall'
+          role: 'selectall',
         },
       ],
     },
@@ -109,9 +109,9 @@ function createMenu() {
         { label: 'acercamiento', role: 'zoomin' },
         { label: 'alejamiento', role: 'zoomout' },
         { type: 'separator' },
-        { label: 'Pantalla completa', role: 'togglefullscreen' }
-      ]
-  },
+        { label: 'Pantalla completa', role: 'togglefullscreen' },
+      ],
+    },
 
     {
       label: 'Ventana',
@@ -154,9 +154,9 @@ function createMenu() {
         {
           label: 'Repo (Github)',
           click: async () => {
-            const { shell} = require('electron');
+            const { shell } = require('electron');
             await shell.openExternal('https://github.com/lenguaje-latino/latino-editor');
-          }
+          },
         },
 
         { type: 'separator' },
@@ -164,7 +164,9 @@ function createMenu() {
         {
           label: 'Herramientas de desarrollo',
           accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-          click (item, focusedWindow) { if (focusedWindow) focusedWindow.webContents.toggleDevTools() }
+          click(item, focusedWindow) {
+            if (focusedWindow) focusedWindow.webContents.toggleDevTools();
+          },
         },
 
         { type: 'separator' },
