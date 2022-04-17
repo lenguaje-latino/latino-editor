@@ -47,13 +47,23 @@ export default {
   },
   mounted() {
     window.addEventListener('keyup', this.handleWindowKeyup);
+
+    this.checkQueryParams();
   },
   destroyed() {
     window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
-    execute() {
-      this.$root.$emit('executeCode');
+    checkQueryParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const file = urlParams.get('file');
+      if (file && '' !== file.trim()) {
+        setTimeout(() => {
+          this.$root.$emit('openFileFromUrl', {
+            url: file,
+          });
+        }, 250);
+      }
     },
 
     handleWindowKeyup($event) {
