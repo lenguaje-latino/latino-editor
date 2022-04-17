@@ -1,17 +1,7 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer permanent app clipped floating width="48">
-      <v-layout column align-center class="min-h-full py-2 space-y-2">
-        <v-btn color="primary" fab small depressed @click="execute">
-          <v-icon size="32">mdi-play</v-icon>
-        </v-btn>
-
-        <v-spacer></v-spacer>
-
-        <v-btn fab small depressed>
-          <v-icon size="24">mdi-cog-outline</v-icon>
-        </v-btn>
-      </v-layout>
+      <AppSidebar></AppSidebar>
     </v-navigation-drawer>
 
     <v-app-bar app dense flat clipped-left class="AppBar">
@@ -37,10 +27,12 @@
 import AppBar from '@/components/AppBar';
 import Editor from '@/components/Editor';
 import Terminal from '@/components/Terminal';
+import AppSidebar from '@/components/AppSidebar';
 
 export default {
   name: 'App',
   components: {
+    AppSidebar,
     Terminal,
     Editor,
     AppBar,
