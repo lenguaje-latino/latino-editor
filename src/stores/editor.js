@@ -35,4 +35,28 @@ export const useEditorStore = defineStore('editor', {
       return false === state.synced;
     },
   },
+
+  actions: {
+    openFile(filepath, temporary = false) {
+      this.isTemporary = temporary;
+      this.usingFile(filepath);
+      // this.code = readFileSync(filepath, 'utf-8');
+      this.wasRecentlyOpened = true;
+    },
+
+    async openFileFromUrl(url) {
+      console.log(['openFileFromUrl', url]);
+      const response = await fetch(url);
+
+      this.isTemporary = false;
+      this.usingFile(url);
+      this.code = await response.text();
+      this.wasRecentlyOpened = true;
+    },
+
+    usingFile(filepath) {
+      this.filepath = filepath;
+      this.synced = true;
+    },
+  },
 });

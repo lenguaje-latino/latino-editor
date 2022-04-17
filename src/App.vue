@@ -28,6 +28,8 @@ import AppBar from '@/components/AppBar';
 import Editor from '@/components/Editor';
 import Terminal from '@/components/Terminal';
 import AppSidebar from '@/components/AppSidebar';
+import { mapActions } from 'pinia/dist/pinia';
+import { useEditorStore } from '@/stores/editor';
 
 export default {
   name: 'App',
@@ -46,15 +48,13 @@ export default {
     window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
+    ...mapActions(useEditorStore, ['openFileFromUrl']),
+
     checkQueryParams() {
       const urlParams = new URLSearchParams(window.location.search);
-      const file = urlParams.get('file');
-      if (file && '' !== file.trim()) {
-        setTimeout(() => {
-          this.$root.$emit('openFileFromUrl', {
-            url: file,
-          });
-        }, 250);
+      const fileUrl = urlParams.get('file');
+      if (fileUrl && '' !== fileUrl.trim()) {
+        this.openFileFromUrl(fileUrl);
       }
     },
 

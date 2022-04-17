@@ -31,11 +31,9 @@ export default {
   async mounted() {
     await this.setupMonacoEditor();
     this.$root.$on('focusEditor', this.focusEditor);
-    this.$root.$on('openFileFromUrl', this.openFileFromUrl);
   },
   destroyed() {
     this.$root.$off('focusEditor', this.focusEditor);
-    this.$root.$off('openFileFromUrl', this.openFileFromUrl);
   },
   computed: {
     ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
@@ -73,12 +71,6 @@ export default {
 
     focusEditor() {
       this.$refs.editor.editor.focus();
-    },
-
-    async openFileFromUrl(args) {
-      const response = await fetch(args.url);
-
-      this.code = await response.text();
     },
   },
 };
