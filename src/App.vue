@@ -45,9 +45,21 @@ export default {
     Editor,
     AppBar,
   },
+  mounted() {
+    window.addEventListener('keyup', this.handleWindowKeyup);
+  },
+  destroyed() {
+    window.removeEventListener('keyup', this.handleWindowKeyup);
+  },
   methods: {
     execute() {
       this.$root.$emit('executeCode');
+    },
+
+    handleWindowKeyup($event) {
+      if ($event.key === 'Escape') {
+        this.$root.$emit('focusEditor');
+      }
     },
   },
 };

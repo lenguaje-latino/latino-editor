@@ -30,8 +30,11 @@ export default {
   },
   async mounted() {
     await this.setupMonacoEditor();
+    this.$root.$on('focusEditor', this.focusEditor);
   },
-  destroyed() {},
+  destroyed() {
+    this.$root.$off('focusEditor', this.focusEditor);
+  },
   computed: {
     ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
   },
@@ -64,6 +67,10 @@ export default {
       monaco.languages.register({ id: 'latino' });
 
       monaco.languages.setMonarchTokensProvider('latino', latinoSyntax);
+    },
+
+    focusEditor() {
+      this.$refs.editor.editor.focus();
     },
   },
 };
