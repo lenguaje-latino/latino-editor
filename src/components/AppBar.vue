@@ -1,31 +1,43 @@
 <template>
-  <v-layout class="relative space-x-2 h-full">
-    <v-tabs>
-      <v-tab :key="synced + '-' + isTemporaryFile">
-        <v-icon v-if="!synced" size="14" class="mr-1">mdi-pencil</v-icon>
-        <span class="truncate normal-case">{{ isTemporaryFile ? 'Código temporal' : filename }}</span>
-      </v-tab>
-    </v-tabs>
+  <v-row class="w-full h-full" no-gutters>
+    <v-col cols="4" class="h-full">
+      <v-row no-gutters justify="start" class="h-full space-x-1">
+        <v-col no-gutters class="grow-0">
+          <v-btn icon="mdi-menu" @click="toggleSidebar" />
+        </v-col>
 
-    <v-layout align-center class="absolute right-0 h-full space-x-1 z-10">
-      <v-flex shrink class="mr-2">
-        <v-layout align-center class="bg-gray-700 py-1 px-2 space-x-1 rounded-full">
-          <v-icon :color="$socket.connected ? 'teal' : 'red'">mdi-circle</v-icon>
-          <span>{{ $socket.connected ? 'Conectado' : 'Desconectado' }}</span>
-        </v-layout>
-      </v-flex>
-    </v-layout>
-  </v-layout>
+        <v-col no-gutters class="h-full py-1">
+          <v-img src="/assets/logo.png" class="w-10" />
+        </v-col>
+      </v-row>
+    </v-col>
+
+    <v-col cols="4" no-gutters class="h-full">
+      <v-row no-gutters justify="center" align="center" class="h-full">
+        <v-btn
+          text
+          :prepend-icon="$socket.connected ? 'mdi-play' : 'mdi-lan-connect'"
+          height="30"
+          class="bg-green-700 text-green-300 bg-opacity-50"
+          :disabled="!$socket.connected"
+          @click="execute"
+        >
+          {{ $socket.connected ? 'Ejecutar' : 'Conectando...' }}
+        </v-btn>
+      </v-row>
+    </v-col>
+
+    <v-col cols="4" />
+  </v-row>
 </template>
 
 <script>
-import { mapState } from 'pinia';
-import { useEditorStore } from '@/stores/editor';
-
 export default {
   name: 'AppBar',
-  computed: {
-    ...mapState(useEditorStore, ['isTemporaryFile', 'filename', 'synced']),
+  methods: {
+    execute() {
+      this.emitter.emit('executeCode');
+    },
   },
 };
 </script>

@@ -1,80 +1,72 @@
 <template>
-  <v-app id="app">
-    <v-navigation-drawer permanent app clipped floating width="48">
-      <AppSidebar></AppSidebar>
-    </v-navigation-drawer>
-
-    <v-app-bar app dense flat clipped-left class="AppBar">
-      <AppBar></AppBar>
+  <v-app id="app" style="height: 100vh" class="bg-app-900 overflow-hidden">
+    <v-app-bar app flat height="46" class="AppBar">
+      <AppBar />
     </v-app-bar>
 
-    <v-main>
-      <v-layout column class="w-full h-full flex flex-col overflow-hidden">
-        <vue-split-view class="flex flex-grow flex-row">
+    <v-navigation-drawer v-model="sidebar" app permanent clipped width="48">
+      <AppSidebar class="bg-app-900" />
+    </v-navigation-drawer>
+
+    <v-main class="flex-1 overflow-hidden">
+      <v-row no-gutters class="w-full h-full">
+        <vue-split-view :direction="view">
           <template #A>
-            <Editor></Editor>
+            <Editor />
           </template>
           <template #B>
-            <Terminal></Terminal>
+            <Terminal />
           </template>
         </vue-split-view>
-      </v-layout>
+      </v-row>
     </v-main>
+
+    <v-footer app height="32" class="grow-0 p-0 bg-app-900" style="z-index: 3000">
+      <AppFooter />
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import AppBar from '@/components/AppBar';
-import Editor from '@/components/Editor';
-import Terminal from '@/components/Terminal';
-import AppSidebar from '@/components/AppSidebar';
-import { mapActions } from 'pinia/dist/pinia';
-import { useEditorStore } from '@/stores/editor';
+import VueSplitView from 'vue-split-view';
+import 'vue-split-view/dist/style.css';
+import AppBar from './components/AppBar.vue';
+import AppSidebar from './components/AppSidebar.vue';
+import Editor from './components/Editor.vue';
+import Terminal from './components/Terminal.vue';
+import AppFooter from './components/AppFooter.vue';
+import { mapState } from 'pinia';
+import { useSettingsStore } from './stores/settings';
+import { useAppStore } from './stores/app';
 
 export default {
   name: 'App',
   components: {
-    AppSidebar,
+    AppFooter,
     Terminal,
+    VueSplitView,
     Editor,
+    AppSidebar,
     AppBar,
   },
-  mounted() {
-    window.addEventListener('keyup', this.handleWindowKeyup);
-
-    this.checkQueryParams();
-  },
-  destroyed() {
-    window.removeEventListener('keyup', this.handleWindowKeyup);
-  },
-  methods: {
-    ...mapActions(useEditorStore, ['openFileFromUrl']),
-
-    checkQueryParams() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const fileUrl = urlParams.get('file');
-      if (fileUrl && '' !== fileUrl.trim()) {
-        this.openFileFromUrl(fileUrl);
-      }
-    },
-
-    handleWindowKeyup($event) {
-      if ($event.key === 'Escape') {
-        this.$root.$emit('focusEditor');
-      }
-    },
+  computed: {
+    ...mapState(useSettingsStore, ['view']),
+    ...mapState(useAppStore, ['sidebar']),
   },
 };
 </script>
 
 <style lang="scss">
 html {
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .AppBar {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   .v-toolbar__content {
-    padding: 0;
+    @apply bg-app-800;
+    padding: 0 !important;
   }
 }
 </style>

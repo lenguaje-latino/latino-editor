@@ -1,18 +1,18 @@
 <template>
-  <MonacoEditor ref="editor" v-model="code" :options="options" class="w-full h-full overflow-hidden"></MonacoEditor>
+  <div id="editor" ref="editor" class="w-full h-full overflow-hidden" />
 </template>
 
 <script>
-import MonacoEditor, { monaco } from 'monaco-editor-vue';
-import { useEditorStore } from '@/stores/editor';
-import { mapWritableState } from 'pinia';
+import * as monaco from 'monaco-editor';
+import { mapState, mapWritableState } from 'pinia';
+import { useEditorStore } from '../stores/editor';
 import latinoSyntax from '../assets/latino_syntax';
+import { useSettingsStore } from '../stores/settings';
+
+let editor;
 
 export default {
   name: 'Editor',
-  components: {
-    MonacoEditor,
-  },
   data() {
     return {
       options: {
@@ -21,22 +21,16 @@ export default {
         horizontal: 'visible',
         theme: 'vs-dark',
         fontFamily: 'Fira Code',
-        fontSize: 14,
+        fontSize: useSettingsStore().$state.editorFontSize,
         language: 'latino',
         renderWhitespace: 'all',
         roundedSelection: true,
       },
     };
   },
-  async mounted() {
-    await this.setupMonacoEditor();
-    this.$root.$on('focusEditor', this.focusEditor);
-  },
-  destroyed() {
-    this.$root.$off('focusEditor', this.focusEditor);
-  },
   computed: {
-    ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
+    ...mapState(useEditorStore, ['filepath']),
+    ...mapWritableState(useEditorStore, ['code', 'synced', 'wasRecentlyOpened']),
   },
   watch: {
     filepath(value, oldValue) {
@@ -52,15 +46,35 @@ export default {
       if (value !== oldValue) {
         this.synced = false;
       }
+
+      this.syncEditorValue();
     },
+  },
+  async mounted() {
+    await this.setupMonacoEditor();
+    this.emitter.on('focusEditor', this.focusEditor);
+  },
+  unmounted() {
+    this.emitter.off('focusEditor', this.focusEditor);
   },
   methods: {
     async setupMonacoEditor() {
-      this.setupMonacoLanguage();
+      editor = monaco.editor.create(document.getElementById('editor'), this.options);
 
-      this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-        this.$root.$emit('executeCode');
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+        this.emitter.emit('executeCode');
       });
+
+      editor.onDidChangeModelContent(() => {
+        const value = editor.getValue();
+        if (this.code !== value) {
+          this.code = value;
+        }
+      });
+
+      this.syncEditorValue();
+
+      this.setupMonacoLanguage();
     },
 
     setupMonacoLanguage() {
@@ -69,8 +83,16 @@ export default {
       monaco.languages.setMonarchTokensProvider('latino', latinoSyntax);
     },
 
+    syncEditorValue() {
+      if (!editor || this.code === editor.getValue()) {
+        return;
+      }
+
+      editor.setValue(this.code);
+    },
+
     focusEditor() {
-      this.$refs.editor.editor.focus();
+      editor.focus();
     },
   },
 };
