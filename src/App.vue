@@ -1,17 +1,7 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer permanent app clipped floating width="48">
-      <v-layout column align-center class="min-h-full py-2 space-y-2">
-        <v-btn color="primary" fab small depressed @click="execute">
-          <v-icon size="32">mdi-play</v-icon>
-        </v-btn>
-
-        <v-spacer></v-spacer>
-
-        <v-btn fab small depressed>
-          <v-icon size="24">mdi-cog-outline</v-icon>
-        </v-btn>
-      </v-layout>
+      <AppSidebar></AppSidebar>
     </v-navigation-drawer>
 
     <v-app-bar app dense flat clipped-left class="AppBar">
@@ -30,44 +20,48 @@
         </vue-split-view>
       </v-layout>
     </v-main>
-
-    <MenuCommandHandler></MenuCommandHandler>
   </v-app>
 </template>
 
 <script>
-import { useEditorStore } from '@/stores/editor';
-import { mapActions } from 'pinia';
 import AppBar from '@/components/AppBar';
 import Editor from '@/components/Editor';
 import Terminal from '@/components/Terminal';
-import MenuCommandHandler from '@/components/MenuCommandHandler';
-import { ipcRenderer } from 'electron';
+import AppSidebar from '@/components/AppSidebar';
+import { mapActions } from 'pinia/dist/pinia';
+import { useEditorStore } from '@/stores/editor';
 
 export default {
   name: 'App',
   components: {
-    MenuCommandHandler,
+    AppSidebar,
     Terminal,
     Editor,
     AppBar,
   },
   mounted() {
-    this.openTemporaryFile();
-    ipcRenderer.on('fileSaved', this.onFileSaved);
+    window.addEventListener('keyup', this.handleWindowKeyup);
+
+    this.checkQueryParams();
   },
   destroyed() {
-    ipcRenderer.removeListener('fileSaved', this.onFileSaved);
+    window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
-    ...mapActions(useEditorStore, ['openTemporaryFile', 'usingFile']),
+    ...mapActions(useEditorStore, ['openFileFromUrl']),
 
-    onFileSaved(event, filepath) {
-      this.usingFile(filepath);
+    checkQueryParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileUrl = urlParams.get('file');
+      if (fileUrl && '' !== fileUrl.trim()) {
+        this.openFileFromUrl(fileUrl);
+      }
     },
 
-    execute() {
-      this.$root.$emit('saveAndExecute');
+    handleWindowKeyup($event) {
+      if ($event.key === 'Escape') {
+        this.$root.$emit('focusEditor');
+      }
     },
   },
 };

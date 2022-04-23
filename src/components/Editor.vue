@@ -5,7 +5,6 @@
 <script>
 import MonacoEditor, { monaco } from 'monaco-editor-vue';
 import { useEditorStore } from '@/stores/editor';
-import { ipcRenderer } from 'electron';
 import { mapWritableState } from 'pinia';
 import latinoSyntax from '../assets/latino_syntax';
 
@@ -31,11 +30,10 @@ export default {
   },
   async mounted() {
     await this.setupMonacoEditor();
-
-    this.$root.$on('saveAndExecute', this.saveAndExecute);
+    this.$root.$on('focusEditor', this.focusEditor);
   },
   destroyed() {
-    this.$root.$off('saveAndExecute', this.saveAndExecute);
+    this.$root.$off('focusEditor', this.focusEditor);
   },
   computed: {
     ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
@@ -61,7 +59,7 @@ export default {
       this.setupMonacoLanguage();
 
       this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-        this.saveAndExecute();
+        this.$root.$emit('executeCode');
       });
     },
 
@@ -71,22 +69,8 @@ export default {
       monaco.languages.setMonarchTokensProvider('latino', latinoSyntax);
     },
 
-    saveAndExecute() {
-      this.saveFile();
-      this.execute();
-    },
-
-    saveFile() {
-      ipcRenderer.send('saveFile', {
-        filepath: this.filepath,
-        content: this.code,
-      });
-    },
-
-    execute() {
-      ipcRenderer.send('executeCode', {
-        filepath: this.filepath,
-      });
+    focusEditor() {
+      this.$refs.editor.editor.focus();
     },
   },
 };

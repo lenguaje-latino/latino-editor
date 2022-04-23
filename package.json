@@ -1,26 +1,7 @@
 {
-  "name": "Latino-Editor",
-  "version": "0.0.2-alpha",
-  "description": "Editor de texto para el Lenguaje Latino",
-  "main": "background.js",
-  "typings": "src/assets/index.d.ts",
+  "name": "latino-editor",
+  "version": "0.0.1-alpha.0",
   "author": "Enzo Notario <hi@enzonotario.me>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/lenguaje-latino/latino-editor/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/enzonotario/latino-editor.git"
-  },
-  "homepage": "https://github.com/lenguaje-latino/latino-editor",
-  "keywords": [
-    "Latino",
-    "Lenguaje Latino",
-    "editor",
-    "editor de texto",
-    "text editor"
-  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -30,9 +11,9 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "main": "background.js",
   "dependencies": {
     "@mdi/font": "5.9.55",
-    "@types/node": "^16.x",
     "@vue/composition-api": "^1.4.9",
     "app-root-dir": "^1.0.2",
     "core-js": "^3.8.3",
@@ -50,12 +31,10 @@
     "prettier": "^2.5.1",
     "regenerator-runtime": "^0.13.9",
     "roboto-fontface": "*",
-    "stylelint": "^13.13.1",
-    "stylelint-config-standard": "^22.0.0",
-    "tslint": "^6.1.2",
-    "typescript": "^4.4.3",
+    "socket.io-client": "^4.4.1",
     "vue": "^2.6.14",
     "vue-resize": "^1.0.1",
+    "vue-socket.io-extended": "^4.2.0",
     "vue-split-view": "^1.0.0",
     "vuetify": "^2.6.0",
     "xterm": "^4.18.0",
@@ -65,14 +44,11 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
-    "@capacitor-community/electron": "^4.1.0",
-    "@electron/remote": "^2.0.8",
     "@vue/cli-plugin-babel": "~4.0.0",
     "@vue/cli-plugin-eslint": "~4.0.0",
     "@vue/cli-service": "~4.0.0",
     "autoprefixer": "^9.8.8",
     "electron": "^13.0.0",
-    "electron-about-window": "^1.15.2",
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
@@ -124,5 +100,8 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "homepage": "https://latinoeditor.enzonotario.me",
+  "license": "MIT",
+  "repository": "https://github.com/enzonotario/latino-editor.git"
 }
