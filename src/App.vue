@@ -1,73 +1,90 @@
 <template>
-  <v-app id="app">
-    <v-navigation-drawer permanent app clipped floating width="48">
-      <v-layout column align-center class="min-h-full py-2 space-y-2">
-        <v-btn color="primary" fab small depressed @click="execute">
-          <v-icon size="32">mdi-play</v-icon>
-        </v-btn>
-
-        <v-spacer></v-spacer>
-
-        <v-btn fab small depressed>
-          <v-icon size="24">mdi-cog-outline</v-icon>
-        </v-btn>
-      </v-layout>
-    </v-navigation-drawer>
-
-    <v-app-bar app dense flat clipped-left class="AppBar">
-      <AppBar></AppBar>
+  <v-app id="app" style="height: 100vh" class="bg-app-900 overflow-hidden">
+    <v-app-bar app flat height="46" class="AppBar">
+      <AppBar />
     </v-app-bar>
 
-    <v-main>
-      <v-layout column class="w-full h-full flex flex-col overflow-hidden">
-        <vue-split-view class="flex flex-grow flex-row">
+    <v-navigation-drawer v-model="sidebar" app permanent clipped width="48">
+      <AppSidebar class="bg-app-900" />
+    </v-navigation-drawer>
+
+    <v-main class="flex-1 overflow-hidden">
+      <v-row no-gutters class="w-full h-full">
+        <vue-split-view :direction="view">
           <template #A>
-            <Editor></Editor>
+            <Editor />
           </template>
           <template #B>
-            <Terminal></Terminal>
+            <Terminal />
           </template>
         </vue-split-view>
-      </v-layout>
+      </v-row>
     </v-main>
 
-    <MenuCommandHandler></MenuCommandHandler>
+    <v-footer app height="32" class="grow-0 p-0 bg-app-900" style="z-index: 3000">
+      <AppFooter />
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import { useEditorStore } from '@/stores/editor';
-import { mapActions } from 'pinia';
-import AppBar from '@/components/AppBar';
-import Editor from '@/components/Editor';
-import Terminal from '@/components/Terminal';
-import MenuCommandHandler from '@/components/MenuCommandHandler';
-import { ipcRenderer } from 'electron';
+import VueSplitView from 'vue-split-view';
+import 'vue-split-view/dist/style.css';
+import AppBar from './components/AppBar.vue';
+import AppSidebar from './components/AppSidebar.vue';
+import Editor from './components/Editor.vue';
+import Terminal from './components/Terminal.vue';
+import AppFooter from './components/AppFooter.vue';
+import { mapState, mapActions } from 'pinia';
+import { useSettingsStore } from './stores/settings';
+import { useAppStore } from './stores/app';
+import { useEditorStore } from './stores/editor';
 
 export default {
   name: 'App',
   components: {
-    MenuCommandHandler,
+    AppFooter,
     Terminal,
+    VueSplitView,
     Editor,
+    AppSidebar,
     AppBar,
   },
+  computed: {
+    ...mapState(useSettingsStore, ['view']),
+    ...mapState(useAppStore, ['sidebar']),
+  },
   mounted() {
-    this.openTemporaryFile();
-    ipcRenderer.on('fileSaved', this.onFileSaved);
+    window.addEventListener('keyup', this.handleWindowKeyup);
+    this.setupTheme();
+    this.checkQueryParams();
   },
   destroyed() {
-    ipcRenderer.removeListener('fileSaved', this.onFileSaved);
+    window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
-    ...mapActions(useEditorStore, ['openTemporaryFile', 'usingFile']),
+    ...mapActions(useEditorStore, ['openFileFromUrl']),
 
-    onFileSaved(event, filepath) {
-      this.usingFile(filepath);
+    setupTheme() {
+      if ('theme' in localStorage && localStorage.theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
     },
 
-    execute() {
-      this.$root.$emit('saveAndExecute');
+    checkQueryParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileUrl = urlParams.get('file');
+      if (fileUrl && '' !== fileUrl.trim()) {
+        this.openFileFromUrl(fileUrl);
+      }
+    },
+
+    handleWindowKeyup($event) {
+      if ($event.key === 'Escape') {
+        this.emitter.emit('editor.focus');
+      }
     },
   },
 };
@@ -75,12 +92,15 @@ export default {
 
 <style lang="scss">
 html {
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .AppBar {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   .v-toolbar__content {
-    padding: 0;
+    @apply bg-app-800;
+    padding: 0 !important;
   }
 }
 </style>

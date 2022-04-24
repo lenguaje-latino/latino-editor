@@ -1,19 +1,18 @@
 import { defineStore } from 'pinia';
-import { readFileSync } from 'fs';
-import { ipcRenderer } from 'electron';
-import { basename } from 'path';
 
 const defaultCode = 'escribir("Hola mundo, Latino!")';
 
 export const useEditorStore = defineStore('editor', {
   state: () => ({
-    code: null,
+    code: 'escribir("Hola mundo, Latino!")',
 
     filepath: null,
 
     synced: true,
 
-    isTemporary: false,
+    isTemporary: true,
+
+    isNewFile: false,
 
     wasRecentlyOpened: true,
   }),
@@ -21,15 +20,11 @@ export const useEditorStore = defineStore('editor', {
   getters: {
     isTemporaryFile: (state) => true === state.isTemporary,
 
-    filename: (state) => {
-      if (!state.filepath) {
-        return null;
+    hasUnsavedChanges: (state) => {
+      if (state.isNewFile) {
+        return state.code.trim() !== '';
       }
 
-      return basename(state.filepath);
-    },
-
-    hasUnsavedChanges: (state) => {
       if (state.isTemporary) {
         return state.code.trim() !== defaultCode;
       }
@@ -39,17 +34,29 @@ export const useEditorStore = defineStore('editor', {
   },
 
   actions: {
-    openTemporaryFile() {
-      ipcRenderer.send('openTemporaryFile', {
-        filename: 'codigo.lat',
-        content: defaultCode,
-      });
+    openNewFile() {
+      this.openFile('', '', true, true);
     },
 
-    openFile(filepath, temporary = false) {
-      this.isTemporary = temporary;
+    openTemporaryFile() {
+      this.openFile('', '', true);
+    },
+
+    openFile(filepath, content, isTemporary = false, isNewFile = false) {
+      this.isTemporary = isTemporary;
+      this.isNewFile = isNewFile;
       this.usingFile(filepath);
-      this.code = readFileSync(filepath, 'utf-8');
+      this.code = content;
+      this.wasRecentlyOpened = true;
+    },
+
+    async openFileFromUrl(url) {
+      const response = await fetch(url);
+
+      this.isNewFile = false;
+      this.isTemporary = false;
+      this.usingFile(url);
+      this.code = await response.text();
       this.wasRecentlyOpened = true;
     },
 

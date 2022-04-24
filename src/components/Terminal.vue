@@ -1,7 +1,5 @@
 <template>
-  <div id="terminal" class="relative h-full overflow-hidden">
-    <resize-observer @notify="onResizeDebounced" />
-  </div>
+  <div id="terminal" v-resize-observer="onResizeDebounced" class="resize relative h-full overflow-hidden" />
 </template>
 
 <script>
@@ -10,35 +8,43 @@ import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
-import { ipcRenderer } from 'electron';
-import getPlatform from '@/get-platform';
-import appRootDir from 'app-root-dir';
-import { dirname, join } from 'path';
+import { mapState } from 'pinia';
+import { useEditorStore } from '../stores/editor';
+import VueResizeObserver from 'vue-resize-observer';
+import { useSettingsStore } from '../stores/settings';
 
 export default {
   name: 'Terminal',
+  directives: { 'resize-observer': VueResizeObserver },
   data() {
     return {
       terminal: null,
       fitAddon: null,
     };
   },
+  computed: {
+    ...mapState(useEditorStore, ['code']),
+    ...mapState(useSettingsStore, ['terminalFontSize']),
+  },
   mounted() {
     this.init();
 
-    this.$root.$on('fileOpened', this.fileOpened);
-    ipcRenderer.on('executeCode', this.executeCode);
-    ipcRenderer.on('pty.onData', this.onPtyData);
+    this.emitter.on('fileOpened', this.fileOpened);
+    this.emitter.on('executeCode', this.executeCode);
+
+    this.$socket.$subscribe('output', this.onPtyData);
   },
-  destroyed() {
-    this.$root.$off('fileOpened', this.fileOpened);
-    ipcRenderer.removeListener('executeCode', this.executeCode);
-    ipcRenderer.removeListener('pty.onData', this.onPtyData);
+  unmounted() {
+    this.emitter.off('fileOpened', this.fileOpened);
+    this.emitter.off('executeCode', this.executeCode);
+
+    this.$socket.$unsubscribe('output');
   },
   methods: {
     init() {
       this.terminal = new Terminal({
         cursorBlink: true,
+        fontSize: this.terminalFontSize,
       });
 
       this.fitAddon = new FitAddon();
@@ -50,24 +56,17 @@ export default {
       this.fitTerminal();
 
       this.terminal.onData((data) => {
-        ipcRenderer.send('terminalKeystroke', {
-          data,
-        });
+        this.$socket.client.emit('input', data);
       });
     },
 
-    executeCode(event, filepath) {
+    executeCode() {
       this.clearTerminal();
-
       this.focusTerminal();
-
-      ipcRenderer.send('runCommand', {
-        command: this.getCommand(),
-        commandArgs: this.getCommandArgs(filepath),
-      });
+      this.$socket.client.emit('execute', this.code);
     },
 
-    onPtyData(event, data) {
+    onPtyData(data) {
       this.terminal.write(data);
     },
 
@@ -90,25 +89,12 @@ export default {
     onResizeDebounced: debounce(function () {
       this.fitTerminal();
     }, 10),
-
-    getCommand() {
-      const binary = 'win' === getPlatform() ? 'latino.exe' : 'latino';
-
-      return process.env.NODE_ENV === 'production'
-        ? join(dirname(appRootDir.get()), 'Resources', 'bin', binary)
-        : join(appRootDir.get(), 'resources', getPlatform(), binary);
-    },
-
-    getCommandArgs(filepath) {
-      return [filepath];
-    },
   },
 };
 </script>
 
 <style>
-.terminal.xterm,
-.xterm-viewport {
+.terminal.xterm {
   @apply w-full h-full;
 }
 </style>
