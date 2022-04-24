@@ -1,7 +1,5 @@
 <template>
-  <div id="terminal" class="relative h-full overflow-hidden">
-    <resize-observer @notify="onResizeDebounced" />
-  </div>
+  <div id="terminal" v-resize-observer="onResizeDebounced" class="resize relative h-full overflow-hidden" />
 </template>
 
 <script>
@@ -11,37 +9,42 @@ import { WebLinksAddon } from 'xterm-addon-web-links';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
 import { mapState } from 'pinia';
-import { useEditorStore } from '@/stores/editor';
+import { useEditorStore } from '../stores/editor';
+import VueResizeObserver from 'vue-resize-observer';
+import { useSettingsStore } from '../stores/settings';
 
 export default {
   name: 'Terminal',
+  directives: { 'resize-observer': VueResizeObserver },
   data() {
     return {
       terminal: null,
       fitAddon: null,
     };
   },
+  computed: {
+    ...mapState(useEditorStore, ['code']),
+    ...mapState(useSettingsStore, ['terminalFontSize']),
+  },
   mounted() {
     this.init();
 
-    this.$root.$on('fileOpened', this.fileOpened);
-    this.$root.$on('executeCode', this.executeCode);
+    this.emitter.on('fileOpened', this.fileOpened);
+    this.emitter.on('executeCode', this.executeCode);
 
     this.$socket.$subscribe('output', this.onPtyData);
   },
-  destroyed() {
-    this.$root.$off('fileOpened', this.fileOpened);
-    this.$root.$off('executeCode', this.executeCode);
+  unmounted() {
+    this.emitter.off('fileOpened', this.fileOpened);
+    this.emitter.off('executeCode', this.executeCode);
 
     this.$socket.$unsubscribe('output');
-  },
-  computed: {
-    ...mapState(useEditorStore, ['code']),
   },
   methods: {
     init() {
       this.terminal = new Terminal({
         cursorBlink: true,
+        fontSize: this.terminalFontSize,
       });
 
       this.fitAddon = new FitAddon();
@@ -91,8 +94,7 @@ export default {
 </script>
 
 <style>
-.terminal.xterm,
-.xterm-viewport {
+.terminal.xterm {
   @apply w-full h-full;
 }
 </style>

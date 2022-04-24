@@ -1,40 +1,22 @@
-# Latino Editor - ("Desktop App")
+# Latino Editor
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/lenguaje-latino/latino-editor?include_prereleases)
 ![Cirrus CI - Specific Branch Build Status](https://img.shields.io/cirrus/github/lenguaje-latino/latino-editor/main)
 ![GitHub](https://img.shields.io/github/license/lenguaje-latino/latino-editor)
 ![GitHub issues](https://img.shields.io/github/issues/lenguaje-latino/latino-editor?label=bug%20issues)
 
-## Sobre el editor
+https://latinoeditor.enzonotario.me/
 
-Editor de código para el [Lenguaje Latino](https://www.lenguajelatino.org/), versión web [editor-enlinea](https://editor.lenguajelatino.org/) desarrollado por [Melvin Guerrero](https://github.com/MelvinG24).
-
-Este editor de código ~~no~~ **es oficial**, y es desarrollado por [Enzo Notario](https://enzonotario.me).
+Editor de código online ~~no~~ **oficial**, desarrollado por [Enzo Notario](https://enzonotario.me), en colaboración de [Melvin Guerrero](https://github.com/MelvinG24).
 
 ## Editor Latino
 <!-- ![image](https://user-images.githubusercontent.com/10469299/161657579-8a119db5-042c-486d-9d2b-3f22925bbc56.png) -->
 ![image](.readme/screenshot.png)
 
-### Características
+## Características
 
-* Multi-plataformas
-* Reconocedor de sintaxis de Latino
-* Ejecución del código de Latino en la terminal sin la necesidad de tener Latino instalado
-
-## Descargar
-
-### Windows
-> Para ejecutar el código en LatinoEditor, es necesario instalar previamente el [Lenguaje Latino](https://github.com/MelvinG24/Latino/releases/download/v1.4.1/Latino-1.4.1-Win.exe).
-
-- Descargar para [Windows (versión portable)](https://github.com/lenguaje-latino/latino-editor/releases/download/v0.0.1-alpha.0/LatinoEditor.0.0.1-alpha.0.exe)
-- Descargar para [Windows (instalador)](https://github.com/lenguaje-latino/latino-editor/releases/download/v0.0.1-alpha.0/LatinoEditor.Instalador.0.0.1-alpha.0.exe)
-
-### Linux
-- Descargar para [Linux (AppImage)](https://github.com/lenguaje-latino/latino-editor/releases/download/v0.0.1-alpha.0/LatinoEditor-0.0.1-alpha.0.AppImage)
-- Descargar para [Linux (snap)](https://github.com/lenguaje-latino/latino-editor/releases/download/v0.0.1-alpha.0/latino-editor_0.0.1-alpha.0_amd64.snap)
-- Descargar para [Linux (deb)](https://github.com/lenguaje-latino/latino-editor/releases/download/v0.0.1-alpha.0/latino-editor_0.0.1-alpha.0_amd64.deb)
-
-### MacOS
-> Aun no se dispone de un binario
+* Editor en línea, capaz de ejecutarse en cualquier navegador web moderno.
+* Reconocedor de sintaxis de Latino.
+* Ejecución del código de Latino en la terminal sin la necesidad de tener Latino instalado.
 
 ## Documentación
 
@@ -44,13 +26,13 @@ LatinoEditor sólo permite ejecutar código Latino. Para más información sobre
 
 Toda buena contribución es bienvenida. Hay varias maneras en las cuales puedes participar en este proyecto, como por ejemplo:
 
-* [Reportando errores y agregando nuevas sugerencias](https://github.com/lenguaje-latino/latino-editor/issues)
-* Revisando los cambios sugeridos en el [Pull requests](https://github.com/lenguaje-latino/latino-editor/pulls)
+* [Reportando errores y agregando nuevas sugerencias](https://github.com/lenguaje-latino/latino-editor/issues).
+* Revisando los cambios sugeridos en el [Pull requests](https://github.com/lenguaje-latino/latino-editor/pulls).
 
 
 Si deseas contribuir en este proyecto proponiendo sugerencias o aportando al código fuente, te dejamos el siguiente enlace:
 
-* [Como compilar Latino-editor](https://github.com/lenguaje-latino/latino-editor/blob/main/.readme/Como_Compilar.md)
+* [Como compilar Latino-editor](https://github.com/lenguaje-latino/latino-editor/blob/main/.readme/Como_Compilar.md).
 
 ## Licencia
-Licenciado bajo la licencia [MIT](https://github.com/lenguaje-latino/latino-editor/blob/main/LICENSE)
+Licenciado bajo la licencia [MIT](https://github.com/lenguaje-latino/latino-editor/blob/main/LICENSE).

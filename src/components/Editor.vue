@@ -1,18 +1,18 @@
 <template>
-  <MonacoEditor ref="editor" v-model="code" :options="options" class="w-full h-full overflow-hidden"></MonacoEditor>
+  <div id="editor" ref="editor" class="w-full h-full overflow-hidden" />
 </template>
 
 <script>
-import MonacoEditor, { monaco } from 'monaco-editor-vue';
-import { useEditorStore } from '@/stores/editor';
+import * as monaco from 'monaco-editor';
 import { mapWritableState } from 'pinia';
+import { useEditorStore } from '../stores/editor';
 import latinoSyntax from '../assets/latino_syntax';
+import { useSettingsStore } from '../stores/settings';
+
+let editor;
 
 export default {
   name: 'Editor',
-  components: {
-    MonacoEditor,
-  },
   data() {
     return {
       options: {
@@ -21,46 +21,66 @@ export default {
         horizontal: 'visible',
         theme: 'vs-dark',
         fontFamily: 'Fira Code',
-        fontSize: 14,
+        fontSize: useSettingsStore().$state.editorFontSize,
         language: 'latino',
         renderWhitespace: 'all',
         roundedSelection: true,
       },
     };
   },
-  async mounted() {
-    await this.setupMonacoEditor();
-    this.$root.$on('focusEditor', this.focusEditor);
-  },
-  destroyed() {
-    this.$root.$off('focusEditor', this.focusEditor);
-  },
   computed: {
-    ...mapWritableState(useEditorStore, ['filepath', 'code', 'synced', 'wasRecentlyOpened']),
+    ...mapWritableState(useEditorStore, ['code', 'synced', 'wasRecentlyOpened']),
   },
   watch: {
-    filepath(value, oldValue) {
-      this.wasRecentlyOpened = value !== oldValue;
-    },
-
     code(value, oldValue) {
-      if (this.wasRecentlyOpened) {
-        this.wasRecentlyOpened = false;
-        return;
-      }
-
-      if (value !== oldValue) {
+      if (!this.wasRecentlyOpened && value !== oldValue) {
         this.synced = false;
       }
+
+      if (this.wasRecentlyOpened) {
+        this.wasRecentlyOpened = false;
+      }
+
+      this.syncValueFromStore();
     },
+  },
+  async mounted() {
+    await this.setupMonacoEditor();
+    this.emitter.on('editor.focus', this.focusEditor);
+    this.emitter.on('editor.undo', this.triggerEditorUndo);
+    this.emitter.on('editor.redo', this.triggerEditorRedo);
+    this.emitter.on('editor.cut', this.triggerEditorCut);
+    this.emitter.on('editor.copy', this.triggerEditorCopy);
+    this.emitter.on('editor.paste', this.triggerEditorPaste);
+    this.emitter.on('editor.selectAll', this.triggerEditorSelectAll);
+  },
+  unmounted() {
+    this.emitter.off('editor.focus', this.focusEditor);
+    this.emitter.off('editor.undo', this.triggerEditorUndo);
+    this.emitter.off('editor.redo', this.triggerEditorRedo);
+    this.emitter.off('editor.cut', this.triggerEditorCut);
+    this.emitter.off('editor.copy', this.triggerEditorCopy);
+    this.emitter.off('editor.paste', this.triggerEditorPaste);
+    this.emitter.off('editor.selectAll', this.triggerEditorSelectAll);
   },
   methods: {
     async setupMonacoEditor() {
-      this.setupMonacoLanguage();
+      editor = monaco.editor.create(document.getElementById('editor'), this.options);
 
-      this.$refs.editor.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-        this.$root.$emit('executeCode');
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+        this.emitter.emit('executeCode');
       });
+
+      editor.onDidChangeModelContent(() => {
+        const value = editor.getValue();
+        if (this.code !== value) {
+          this.code = value;
+        }
+      });
+
+      this.syncValueFromStore();
+
+      this.setupMonacoLanguage();
     },
 
     setupMonacoLanguage() {
@@ -69,8 +89,42 @@ export default {
       monaco.languages.setMonarchTokensProvider('latino', latinoSyntax);
     },
 
+    syncValueFromStore() {
+      if (!editor || this.code === editor.getValue()) {
+        return;
+      }
+
+      editor.setValue(this.code);
+    },
+
     focusEditor() {
-      this.$refs.editor.editor.focus();
+      editor.focus();
+    },
+
+    triggerEditorUndo() {
+      editor.trigger('source', 'undo');
+    },
+
+    triggerEditorRedo() {
+      editor.trigger('source', 'redo');
+    },
+
+    triggerEditorCut() {
+      editor.trigger('source', 'editor.action.clipboardCutAction');
+    },
+
+    triggerEditorCopy() {
+      editor.trigger('source', 'editor.action.clipboardCopyAction');
+    },
+
+    triggerEditorPaste() {
+      this.focusEditor();
+      editor.trigger('source', 'editor.action.clipboardPasteAction');
+    },
+
+    triggerEditorSelectAll() {
+      const range = editor.getModel().getFullModelRange();
+      editor.setSelection(range);
     },
   },
 };

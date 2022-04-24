@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { basename } from 'path';
 
 const defaultCode = 'escribir("Hola mundo, Latino!")';
 
@@ -13,21 +12,19 @@ export const useEditorStore = defineStore('editor', {
 
     isTemporary: true,
 
+    isNewFile: false,
+
     wasRecentlyOpened: true,
   }),
 
   getters: {
     isTemporaryFile: (state) => true === state.isTemporary,
 
-    filename: (state) => {
-      if (!state.filepath) {
-        return null;
+    hasUnsavedChanges: (state) => {
+      if (state.isNewFile) {
+        return state.code.trim() !== '';
       }
 
-      return basename(state.filepath);
-    },
-
-    hasUnsavedChanges: (state) => {
       if (state.isTemporary) {
         return state.code.trim() !== defaultCode;
       }
@@ -37,17 +34,26 @@ export const useEditorStore = defineStore('editor', {
   },
 
   actions: {
-    openFile(filepath, temporary = false) {
-      this.isTemporary = temporary;
+    openNewFile() {
+      this.openFile('', '', true, true);
+    },
+
+    openTemporaryFile() {
+      this.openFile('', '', true);
+    },
+
+    openFile(filepath, content, isTemporary = false, isNewFile = false) {
+      this.isTemporary = isTemporary;
+      this.isNewFile = isNewFile;
       this.usingFile(filepath);
-      // this.code = readFileSync(filepath, 'utf-8');
+      this.code = content;
       this.wasRecentlyOpened = true;
     },
 
     async openFileFromUrl(url) {
-      console.log(['openFileFromUrl', url]);
       const response = await fetch(url);
 
+      this.isNewFile = false;
       this.isTemporary = false;
       this.usingFile(url);
       this.code = await response.text();

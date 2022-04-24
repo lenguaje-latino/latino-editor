@@ -1,22 +1,26 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
-import pinia from './plugins/pinia';
-
-import './plugins/vue-resize';
-import './plugins/vue-split-view';
-import './plugins/vue-socket.io';
-
+import vuetify from './plugins/vuetify';
+import { loadFonts } from './plugins/webfontloader';
+import { createPinia } from 'pinia';
+import VueSocketIOExt from 'vue-socket.io-extended';
+import VueShortkey from 'vue-three-shortkey';
+import $socket from './plugins/socket-instance';
+import mitt from 'mitt';
 import './assets/tailwind.css';
 import './assets/app.css';
-import vuetify from './plugins/vuetify';
-import 'roboto-fontface/css/roboto/roboto-fontface.css';
-import 'firacode/distr/fira_code.css';
-import '@mdi/font/css/materialdesignicons.css';
 
-Vue.config.productionTip = false;
+loadFonts();
 
-new Vue({
-  render: (h) => h(App),
-  vuetify,
-  pinia,
-}).$mount('#app');
+const emitter = mitt();
+
+const app = createApp(App)
+  .use(vuetify)
+  .use(createPinia())
+  .use(VueSocketIOExt, $socket)
+  .use(VueShortkey)
+  .provide('emitter', emitter);
+
+app.config.globalProperties.emitter = emitter;
+
+app.mount('#app');
