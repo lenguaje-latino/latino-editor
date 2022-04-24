@@ -1,7 +1,7 @@
 {
   "name": "latino-editor",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.2-alpha.0",
+  "author": "Enzo Notario <hi@enzonotario.me>",
   "scripts": {
     "build": "vite build",
     "dev": "vite",
