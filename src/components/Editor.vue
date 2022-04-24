@@ -4,7 +4,7 @@
 
 <script>
 import * as monaco from 'monaco-editor';
-import { mapState, mapWritableState } from 'pinia';
+import { mapWritableState } from 'pinia';
 import { useEditorStore } from '../stores/editor';
 import latinoSyntax from '../assets/latino_syntax';
 import { useSettingsStore } from '../stores/settings';
@@ -29,33 +29,39 @@ export default {
     };
   },
   computed: {
-    ...mapState(useEditorStore, ['filepath']),
     ...mapWritableState(useEditorStore, ['code', 'synced', 'wasRecentlyOpened']),
   },
   watch: {
-    filepath(value, oldValue) {
-      this.wasRecentlyOpened = value !== oldValue;
-    },
-
     code(value, oldValue) {
-      if (this.wasRecentlyOpened) {
-        this.wasRecentlyOpened = false;
-        return;
-      }
-
-      if (value !== oldValue) {
+      if (!this.wasRecentlyOpened && value !== oldValue) {
         this.synced = false;
       }
 
-      this.syncEditorValue();
+      if (this.wasRecentlyOpened) {
+        this.wasRecentlyOpened = false;
+      }
+
+      this.syncValueFromStore();
     },
   },
   async mounted() {
     await this.setupMonacoEditor();
     this.emitter.on('focusEditor', this.focusEditor);
+    this.emitter.on('editor.undo', this.triggerEditorUndo);
+    this.emitter.on('editor.redo', this.triggerEditorRedo);
+    this.emitter.on('editor.cut', this.triggerEditorCut);
+    this.emitter.on('editor.copy', this.triggerEditorCopy);
+    this.emitter.on('editor.paste', this.triggerEditorPaste);
+    this.emitter.on('editor.selectAll', this.triggerEditorSelectAll);
   },
   unmounted() {
     this.emitter.off('focusEditor', this.focusEditor);
+    this.emitter.off('editor.undo', this.triggerEditorUndo);
+    this.emitter.off('editor.redo', this.triggerEditorRedo);
+    this.emitter.off('editor.cut', this.triggerEditorCut);
+    this.emitter.off('editor.copy', this.triggerEditorCopy);
+    this.emitter.off('editor.paste', this.triggerEditorPaste);
+    this.emitter.off('editor.selectAll', this.triggerEditorSelectAll);
   },
   methods: {
     async setupMonacoEditor() {
@@ -72,7 +78,7 @@ export default {
         }
       });
 
-      this.syncEditorValue();
+      this.syncValueFromStore();
 
       this.setupMonacoLanguage();
     },
@@ -83,7 +89,7 @@ export default {
       monaco.languages.setMonarchTokensProvider('latino', latinoSyntax);
     },
 
-    syncEditorValue() {
+    syncValueFromStore() {
       if (!editor || this.code === editor.getValue()) {
         return;
       }
@@ -93,6 +99,32 @@ export default {
 
     focusEditor() {
       editor.focus();
+    },
+
+    triggerEditorUndo() {
+      editor.trigger('source', 'undo');
+    },
+
+    triggerEditorRedo() {
+      editor.trigger('source', 'redo');
+    },
+
+    triggerEditorCut() {
+      editor.trigger('source', 'editor.action.clipboardCutAction');
+    },
+
+    triggerEditorCopy() {
+      editor.trigger('source', 'editor.action.clipboardCopyAction');
+    },
+
+    triggerEditorPaste() {
+      this.focusEditor();
+      editor.trigger('source', 'editor.action.clipboardPasteAction');
+    },
+
+    triggerEditorSelectAll() {
+      const range = editor.getModel().getFullModelRange();
+      editor.setSelection(range);
     },
   },
 };

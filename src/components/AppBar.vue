@@ -3,7 +3,7 @@
     <v-col cols="4" class="h-full">
       <v-row no-gutters justify="start" class="h-full space-x-1">
         <v-col no-gutters class="grow-0">
-          <v-btn icon="mdi-menu" @click="toggleSidebar" />
+          <AppMenu></AppMenu>
         </v-col>
 
         <v-col no-gutters class="h-full py-1">
@@ -32,8 +32,11 @@
 </template>
 
 <script>
+import AppMenu from './AppMenu.vue';
+
 export default {
   name: 'AppBar',
+  components: { AppMenu },
   methods: {
     execute() {
       this.emitter.emit('executeCode');

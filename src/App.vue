@@ -53,6 +53,18 @@ export default {
     ...mapState(useSettingsStore, ['view']),
     ...mapState(useAppStore, ['sidebar']),
   },
+  mounted() {
+    this.setupTheme();
+  },
+  methods: {
+    setupTheme() {
+      if ('theme' in localStorage && localStorage.theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+    },
+  },
 };
 </script>
 

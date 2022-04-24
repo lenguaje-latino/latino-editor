@@ -12,6 +12,8 @@ export const useEditorStore = defineStore('editor', {
 
     isTemporary: true,
 
+    isNewFile: false,
+
     wasRecentlyOpened: true,
   }),
 
@@ -19,6 +21,10 @@ export const useEditorStore = defineStore('editor', {
     isTemporaryFile: (state) => true === state.isTemporary,
 
     hasUnsavedChanges: (state) => {
+      if (state.isNewFile) {
+        return state.code.trim() !== '';
+      }
+
       if (state.isTemporary) {
         return state.code.trim() !== defaultCode;
       }
@@ -28,17 +34,26 @@ export const useEditorStore = defineStore('editor', {
   },
 
   actions: {
-    openFile(filepath, temporary = false) {
-      this.isTemporary = temporary;
+    openNewFile() {
+      this.openFile('', '', true, true);
+    },
+
+    openTemporaryFile() {
+      this.openFile('', '', true);
+    },
+
+    openFile(filepath, content, isTemporary = false, isNewFile = false) {
+      this.isTemporary = isTemporary;
+      this.isNewFile = isNewFile;
       this.usingFile(filepath);
-      // this.code = readFileSync(filepath, 'utf-8');
+      this.code = content;
       this.wasRecentlyOpened = true;
     },
 
     async openFileFromUrl(url) {
-      console.log(['openFileFromUrl', url]);
       const response = await fetch(url);
 
+      this.isNewFile = false;
       this.isTemporary = false;
       this.usingFile(url);
       this.code = await response.text();
