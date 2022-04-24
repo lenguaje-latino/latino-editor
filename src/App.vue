@@ -35,9 +35,10 @@ import AppSidebar from './components/AppSidebar.vue';
 import Editor from './components/Editor.vue';
 import Terminal from './components/Terminal.vue';
 import AppFooter from './components/AppFooter.vue';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useSettingsStore } from './stores/settings';
 import { useAppStore } from './stores/app';
+import { useEditorStore } from './stores/editor';
 
 export default {
   name: 'App',
@@ -54,14 +55,35 @@ export default {
     ...mapState(useAppStore, ['sidebar']),
   },
   mounted() {
+    window.addEventListener('keyup', this.handleWindowKeyup);
     this.setupTheme();
+    this.checkQueryParams();
+  },
+  destroyed() {
+    window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
+    ...mapActions(useEditorStore, ['openFileFromUrl']),
+
     setupTheme() {
       if ('theme' in localStorage && localStorage.theme === 'light') {
         document.documentElement.classList.remove('dark');
       } else {
         document.documentElement.classList.add('dark');
+      }
+    },
+
+    checkQueryParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileUrl = urlParams.get('file');
+      if (fileUrl && '' !== fileUrl.trim()) {
+        this.openFileFromUrl(fileUrl);
+      }
+    },
+
+    handleWindowKeyup($event) {
+      if ($event.key === 'Escape') {
+        this.emitter.emit('editor.focus');
       }
     },
   },

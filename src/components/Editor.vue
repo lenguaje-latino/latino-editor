@@ -46,7 +46,7 @@ export default {
   },
   async mounted() {
     await this.setupMonacoEditor();
-    this.emitter.on('focusEditor', this.focusEditor);
+    this.emitter.on('editor.focus', this.focusEditor);
     this.emitter.on('editor.undo', this.triggerEditorUndo);
     this.emitter.on('editor.redo', this.triggerEditorRedo);
     this.emitter.on('editor.cut', this.triggerEditorCut);
@@ -55,7 +55,7 @@ export default {
     this.emitter.on('editor.selectAll', this.triggerEditorSelectAll);
   },
   unmounted() {
-    this.emitter.off('focusEditor', this.focusEditor);
+    this.emitter.off('editor.focus', this.focusEditor);
     this.emitter.off('editor.undo', this.triggerEditorUndo);
     this.emitter.off('editor.redo', this.triggerEditorRedo);
     this.emitter.off('editor.cut', this.triggerEditorCut);
