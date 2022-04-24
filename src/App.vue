@@ -59,7 +59,7 @@ export default {
     this.setupTheme();
     this.checkQueryParams();
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
