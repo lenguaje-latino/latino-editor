@@ -58,6 +58,7 @@ export default {
     window.addEventListener('keyup', this.handleWindowKeyup);
     this.setupTheme();
     this.checkQueryParams();
+    this.$gtag.pageview('/');
   },
   unmounted() {
     window.removeEventListener('keyup', this.handleWindowKeyup);

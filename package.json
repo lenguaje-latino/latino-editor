@@ -19,6 +19,7 @@
     "uuid": "^8.3.2",
     "vite-plugin-monaco-editor": "^1.0.10",
     "vue": "^3.2.25",
+    "vue-gtag": "^2.0.1",
     "vue-resize-observer": "^2.0.16",
     "vue-socket.io-extended": "^5.0.0-alpha.5",
     "vue-split-view": "^1.0.0",
