@@ -7,6 +7,7 @@ import VueSocketIOExt from 'vue-socket.io-extended';
 import VueShortkey from 'vue-three-shortkey';
 import $socket from './plugins/socket-instance';
 import mitt from 'mitt';
+import VueGtag from 'vue-gtag';
 import './assets/tailwind.css';
 import './assets/app.css';
 
@@ -19,6 +20,9 @@ const app = createApp(App)
   .use(createPinia())
   .use(VueSocketIOExt, $socket)
   .use(VueShortkey)
+  .use(VueGtag, {
+    config: { id: 'G-4X8XDXL17Y' },
+  })
   .provide('emitter', emitter);
 
 app.config.globalProperties.emitter = emitter;
