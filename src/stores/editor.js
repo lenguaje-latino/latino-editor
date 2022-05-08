@@ -6,7 +6,7 @@ export const useEditorStore = defineStore('editor', {
   state: () => ({
     code: 'escribir("Hola mundo, Latino!")',
 
-    filepath: null,
+    filepath: 'codigo.lat',
 
     synced: true,
 
@@ -35,11 +35,7 @@ export const useEditorStore = defineStore('editor', {
 
   actions: {
     openNewFile() {
-      this.openFile('', '', true, true);
-    },
-
-    openTemporaryFile() {
-      this.openFile('', '', true);
+      this.openFile('codigo.lat', '', true, true);
     },
 
     openFile(filepath, content, isTemporary = false, isNewFile = false) {
@@ -63,6 +59,7 @@ export const useEditorStore = defineStore('editor', {
     usingFile(filepath) {
       this.filepath = filepath;
       this.synced = true;
+      this.isTemporary = false;
     },
   },
 });
