@@ -64,7 +64,7 @@ export default {
     window.removeEventListener('keyup', this.handleWindowKeyup);
   },
   methods: {
-    ...mapActions(useEditorStore, ['openFileFromUrl']),
+    ...mapActions(useEditorStore, ['openFile', 'openFileFromUrl']),
 
     setupTheme() {
       if ('theme' in localStorage && localStorage.theme === 'light') {
@@ -76,9 +76,16 @@ export default {
 
     checkQueryParams() {
       const urlParams = new URLSearchParams(window.location.search);
+
       const fileUrl = urlParams.get('file');
       if (fileUrl && '' !== fileUrl.trim()) {
         this.openFileFromUrl(fileUrl);
+      }
+
+      const base64 = urlParams.get('base64');
+      if (base64 && '' !== base64.trim()) {
+        const decoded = atob(base64);
+        this.openFile('codigo.lat', decoded, true, true);
       }
     },
 
