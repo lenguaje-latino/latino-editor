@@ -65,7 +65,7 @@ async function handleAskOpenFileCommand(args) {
 async function handleOpenFileCommand(args) {
   await fileSystemAccess.open();
 
-  editorStore.openFile(fileSystemAccess.fileName.value, fileSystemAccess.data.value, args.temporary);
+  editorStore.openFile(fileSystemAccess.fileName.value, fileSystemAccess.data.value, true === args.temporary);
 }
 
 async function handleAskSaveFileCommand() {
@@ -82,12 +82,22 @@ async function handleAskSaveFileCommand() {
 
 async function handleSaveFileAsCommand() {
   fileSystemAccess.data.value = editorStore.code;
-  await fileSystemAccess.saveAs();
+
+  await fileSystemAccess.saveAs({
+    suggestedName: editorStore.filepath,
+  });
+
+  editorStore.usingFile(fileSystemAccess.fileName.value);
 }
 
 async function handleSaveFileCommand() {
   fileSystemAccess.data.value = editorStore.code;
-  await fileSystemAccess.save();
+
+  await fileSystemAccess.save({
+    suggestedName: editorStore.filepath,
+  });
+
+  editorStore.usingFile(fileSystemAccess.fileName.value);
 }
 
 async function showUnsavedDialog(args) {
