@@ -21,7 +21,9 @@ const app = createApp(App)
   .use(VueSocketIOExt, $socket)
   .use(VueShortkey)
   .use(VueGtag, {
-    config: { id: 'G-4X8XDXL17Y' },
+    config: {
+      id: import.meta.env.VITE_GTAG_ID,
+    },
   })
   .provide('emitter', emitter);
 
