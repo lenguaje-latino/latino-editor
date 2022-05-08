@@ -5,7 +5,7 @@
 <script setup>
 import { inject } from 'vue';
 import { useEditorStore } from '../../stores/editor';
-import { useFileSystemAccess } from '@vueuse/core';
+import { useFileSystemAccess, useClipboard } from '@vueuse/core';
 
 const emitter = inject('emitter');
 
@@ -37,6 +37,8 @@ emitter.on('menu-command', async (args) => {
       return handleSaveFileAsCommand(args);
     case 'save-file':
       return handleSaveFileCommand(args);
+    case 'copy-base64-to-clipboard':
+      return handleCopyBase64ToClipboard(args);
     case 'fallback':
     default:
       return null;
@@ -109,6 +111,16 @@ async function showUnsavedDialog(args) {
       confirmed: true,
     });
   }
+}
+
+function handleCopyBase64ToClipboard() {
+  const base64 = btoa(editorStore.code);
+
+  const clipboard = useClipboard({
+    source: base64,
+  });
+
+  clipboard.copy();
 }
 </script>
 

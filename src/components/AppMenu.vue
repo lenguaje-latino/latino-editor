@@ -57,6 +57,17 @@ const menuTemplate = [
           });
         },
       },
+
+      { type: 'separator' },
+
+      {
+        label: 'Copiar base64',
+        handler: async (item, emitter) => {
+          emitter.emit('menu-command', {
+            command: 'copy-base64-to-clipboard',
+          });
+        },
+      },
     ],
   },
 
