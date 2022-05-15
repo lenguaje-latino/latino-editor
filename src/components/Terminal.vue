@@ -8,7 +8,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import 'xterm/css/xterm.css';
 import debounce from 'lodash.debounce';
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import { useEditorStore } from '../stores/editor';
 import VueResizeObserver from 'vue-resize-observer';
 import { useSettingsStore } from '../stores/settings';
@@ -25,6 +25,7 @@ export default {
   computed: {
     ...mapState(useEditorStore, ['code']),
     ...mapState(useSettingsStore, ['terminalFontSize']),
+    ...mapWritableState(useEditorStore, ['runningPids']),
   },
   mounted() {
     this.init();
@@ -32,13 +33,13 @@ export default {
     this.emitter.on('fileOpened', this.fileOpened);
     this.emitter.on('executeCode', this.executeCode);
 
-    this.$socket.$subscribe('output', this.onPtyData);
+    this.subscribeToSocket();
   },
   unmounted() {
     this.emitter.off('fileOpened', this.fileOpened);
     this.emitter.off('executeCode', this.executeCode);
 
-    this.$socket.$unsubscribe('output');
+    this.unsubscribeFromSocket();
   },
   methods: {
     init() {
@@ -61,6 +62,10 @@ export default {
     },
 
     executeCode() {
+      if (this.runningPids && this.runningPids.length) {
+        this.onPtyFinished();
+      }
+
       this.clearTerminal();
       this.focusTerminal();
       this.$socket.client.emit('execute', this.code);
@@ -68,6 +73,26 @@ export default {
 
     onPtyData(data) {
       this.terminal.write(data);
+    },
+
+    onPtyRunning(pid) {
+      if (!this.runningPids.value) {
+        this.runningPids.value = [];
+      }
+
+      if (!this.runningPids.value || this.runningPids.value.find((p) => p === pid)) {
+        return;
+      }
+
+      this.runningPids.value.push(pid);
+    },
+
+    onPtyFinished(pid) {
+      if (!this.runningPids.value) {
+        return;
+      }
+
+      this.runningPids.value = this.runningPids.value.filter((p) => p !== pid);
     },
 
     fileOpened() {
@@ -89,6 +114,18 @@ export default {
     onResizeDebounced: debounce(function () {
       this.fitTerminal();
     }, 10),
+
+    subscribeToSocket() {
+      this.$socket.$subscribe('output', this.onPtyData);
+      this.$socket.$subscribe('running', this.onPtyRunning);
+      this.$socket.$subscribe('finished', this.onPtyFinished);
+    },
+
+    unsubscribeFromSocket() {
+      this.$socket.$unsubscribe('output');
+      this.$socket.$unsubscribe('running');
+      this.$socket.$unsubscribe('finished');
+    },
   },
 };
 </script>
