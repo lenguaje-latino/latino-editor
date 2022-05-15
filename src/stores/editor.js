@@ -15,6 +15,8 @@ export const useEditorStore = defineStore('editor', {
     isNewFile: false,
 
     wasRecentlyOpened: true,
+
+    runningPids: [],
   }),
 
   getters: {
