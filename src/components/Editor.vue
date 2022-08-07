@@ -8,6 +8,8 @@ import { mapWritableState } from 'pinia';
 import { useEditorStore } from '../stores/editor';
 import latinoSyntax from '../assets/latino_syntax';
 import { useSettingsStore } from '../stores/settings';
+import { getSharedCode } from '../logics/useShare';
+import { mapActions } from 'pinia/dist/pinia';
 
 let editor;
 
@@ -53,6 +55,16 @@ export default {
     this.emitter.on('editor.copy', this.triggerEditorCopy);
     this.emitter.on('editor.paste', this.triggerEditorPaste);
     this.emitter.on('editor.selectAll', this.triggerEditorSelectAll);
+
+    const { fileUrl, base64, code } = getSharedCode();
+
+    if (code) {
+      this.openFile('codigo.lat', code, true, true);
+    } else if (base64) {
+      this.openFile('codigo.lat', base64, true, true);
+    } else if (fileUrl) {
+      this.openFileFromUrl(fileUrl);
+    }
   },
   unmounted() {
     this.emitter.off('editor.focus', this.focusEditor);
@@ -64,6 +76,8 @@ export default {
     this.emitter.off('editor.selectAll', this.triggerEditorSelectAll);
   },
   methods: {
+    ...mapActions(useEditorStore, ['openFile', 'openFileFromUrl']),
+
     async setupMonacoEditor() {
       editor = monaco.editor.create(document.getElementById('editor'), this.options);
 

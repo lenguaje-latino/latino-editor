@@ -27,22 +27,53 @@
       </v-row>
     </v-col>
 
-    <v-col cols="4" />
+    <v-col cols="4">
+      <v-row no-gutters justify="end" align="center" class="h-full px-2">
+        <v-tooltip anchor="bottom center">
+          <template #activator="{ props }">
+            <v-btn
+              icon="mdi-share"
+              height="36"
+              width="36"
+              class="rounded-full bg-gray-700 text-gray-300 bg-opacity-50"
+              v-bind="props"
+              @click="share"
+            >
+            </v-btn>
+          </template>
+          <span>Compartir</span>
+        </v-tooltip>
+      </v-row>
+    </v-col>
   </v-row>
 </template>
 
-<script>
+<script setup>
 import AppMenu from './AppMenu.vue';
+import { getSharedUrl } from '../logics/useShare';
+import { useEditorStore } from '../stores/editor';
+import { useClipboard } from '@vueuse/core/index';
+import { inject } from 'vue';
 
-export default {
-  name: 'AppBar',
-  components: { AppMenu },
-  methods: {
-    execute() {
-      this.emitter.emit('executeCode');
-    },
-  },
-};
+const editorStore = useEditorStore();
+
+const emitter = inject('emitter');
+
+function execute() {
+  emitter.emit('executeCode');
+}
+
+function share() {
+  const url = getSharedUrl(editorStore.code);
+  const path = `${url.pathname}${url.search}`;
+
+  window.history.replaceState('', '', path);
+
+  const clipboard = useClipboard({
+    source: url.href,
+  });
+  clipboard.copy();
+}
 </script>
 
 <style scoped></style>

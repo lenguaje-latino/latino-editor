@@ -11,9 +11,9 @@ Hola! Estamos encantados/as de que estés interesado/a en contribuir al proyecto
 
 - Realiza el *checkout* de tu rama, saliendo `main`, y luego realiza el PR contra `main`.
 - Si se agrega una nueva característica:
-    - Provee una razón conveniente para agregar la característica. Idealmente, primero deberías haber abierto un *issue* para discutir los pasos a seguir.
+  - Provee una razón conveniente para agregar la característica. Idealmente, primero deberías haber abierto un *issue* para discutir los pasos a seguir.
 - Si soluciona un problema:
-    - Provee una descripción detallada del problema.
+  - Provee una descripción detallada del problema.
 - Puedes tener múltiples pequeños *commits* mientras trabajas en el PR, luego se realizará un *squash*.
 - Los mensajes de los *commits* deben seguir la especificación: [Commits Convencionales](https://www.conventionalcommits.org/es/v1.0.0/). La descripción y cuerpo pueden ser en Español.
 
